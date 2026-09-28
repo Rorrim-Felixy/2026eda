@@ -1,0 +1,6 @@
+ssh_host=192.168.198.128
+ssh_user=user
+ssh_key=C:/Users/10392/.ssh/meqlab_pmms
+meqlabpath=/home/user/start-meqlab.sh
+feature=prim|rf_main|ppei
+log_level=INFO
