@@ -1,0 +1,8 @@
+ssh_host=MEQLAB_LINUX_IP
+ssh_user=MEQLAB_USER
+ssh_port=22
+ssh_key=C:/path/to/meqlab_ssh_private_key
+meqlabpath=/home/MEQLAB_USER/AI-Agent/start-meqlab.sh
+feature=prim|rf_main|ppei
+log_level=INFO
+

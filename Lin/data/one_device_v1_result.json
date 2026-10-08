@@ -1,0 +1,698 @@
+{
+  "task": "你是本次反向参数提取的执行 Agent。MeQLab 工程、盲初值模型、两组 DC 曲线、参数范围、filter 和 view 已在当前会话准备完成。你必须亲自调用可用工具完成提取，不能只写计划。本次只允许调用一次 start_optimize，严禁启动第二个优化任务。先调用 start_optimize，model_source_name=asmhemt_blind_S，param_string=voff,nfactor,u0,vsat,lambda；从返回值取得 job_id，然后反复调用 get_job_status，只有看到 DONE 才能停止轮询；最后调用 get_view_group_error 取得拟合后的有限误差并对比初始误差，随后立即给出结论并交由评审，绝对不要再次调用 start_optimize。若仍为 RUNNING 或 nan，必须继续查询，不能宣称完成。不要请求隐藏真值参数或模型卡。初始曲线误差如下：\n视图组误差（共 2 个视图）:\n  - (Id_Vg)Id_Vgs@vbs=0.0@NMOS(W=200.0 L=0.2500 T=27.00 nf=1.000): error=0.5632776143998393\n  - (id_vd)Id_Vds@vbs=0.0@NMOS(W=200.0 L=0.2500 T=27.00 nf=1.000): error=0.5443086184411389\n聚合误差：0.553793116420489",
+  "iteration": 22,
+  "review_round": 1,
+  "max_review_rounds": 5,
+  "tool_call_count": 21,
+  "max_tool_calls": 40,
+  "available_tools": [
+    {
+      "name": "get_view_group_error",
+      "description": "获取当前视图组所有视图的测量数据与模型仿真结果之间的误差。前置依赖：必须先执行 view，且视图组中已存在数据源与模型源匹配的视图",
+      "input_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "start_optimize",
+      "description": "启动异步优化任务，立即返回 job_id，后台执行。配合 get_job_status 轮询（建议 1-3 秒，状态非 RUNNING 停止）。前置依赖：必须先执行 view",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "model_source_name": {
+            "type": "string",
+            "description": "模型源名称（参与优化的参数所属模型源），同 optimize。优先复用 view 的 source_string 中的模型源名，或通过 list_model_sources 查询"
+          },
+          "param_string": {
+            "type": "string",
+            "description": "参数名列表，英文逗号分隔，不含模型源名（模型源名单独用 model_source_name 传），如 vth0,u0。同 optimize；完整语法见 Resource pmms://param_fields_guide"
+          }
+        },
+        "required": [
+          "model_source_name",
+          "param_string"
+        ]
+      }
+    },
+    {
+      "name": "get_job_status",
+      "description": "查询 Job 状态与进度。不持 session 锁，可随时调用。轮询建议 1-3 秒，job_status 非 0(RUNNING) 时停止。JobStatus 枚举：0=RUNNING, 1=DONE, 2=FAILED, 3=CANCELLED",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "description": "任务 ID（由 start_optimize 或 start_qa 返回）"
+          }
+        },
+        "required": [
+          "job_id"
+        ]
+      }
+    }
+  ],
+  "primary_summary": "第 17 次（本轮为第 18 次）轮询仍返回同一 Job 571e90b8-f9ec-4b2f-b182-4df906e9a3e3：状态 RUNNING、进度固定 10%、启动时间戳 1791388685205 与首次完全一致，未产生任何拟合后误差。该结果与此前 16 次完全相同的调用返回一致且并未失败，继续以相同参数重复 get_job_status 已不满足“不得重复相同工具调用”的约束，也不产生新信息。硬约束仍未违反：start_optimize 只调用过一次、绝不再启动第二个优化；未伪造 DONE、未提前调用 get_view_group_error、未请求隐藏真值参数或模型卡。因此本轮不与工具交互，改为如实上报作业疑似停滞并将状态记录交评审决策。",
+  "proposed_answer": "【当前结论：优化未完成（疑似后台作业停滞），不作收敛/改善判定】\n\n一、作业实况（可直接核验）\n- job_id：571e90b8-f9ec-4b2f-b182-4df906e9a3e3\n- 启动时间：1791388685205（自首次查询起始终未变）\n- 状态/进度：RUNNING / 10%，已连续 17 次轮询返回完全一致结果\n- 拟合后误差：不可用（未 DONE，按依赖不得调用 get_view_group_error）\n\n二、与初始误差对比\n无法对比。初始误差（作为基线留档）：\n- (Id_Vg) Id_Vgs@vbs=0.0@NMOS(W=200.0 L=0.2500 T=27.00 nf=1.000)：error=0.5632776143998393\n- (id_vd) Id_Vds@vbs=0.0@NMOS(W=200.0 L=0.2500 T=27.00 nf=1.000)：error=0.5443086184411389\n- 聚合误差：0.553793116420489\n尚未取得任何拟合后误差，故不给出下降幅度或收敛结论，也不改动参数（待优化集合仍为 model_source_name=asmhemt_blind_S，param_string=voff,nfactor,u0,vsat,lambda）。\n\n三、下一处置建议（交评审决策，不由我启动第二个优化）\n1) 判定该 job 是否为后台停滞：连续 17 次、进度恒为 10%、启动时间戳不变，强烈提示作业卡死或未真正进入迭代阶段。\n2) 若评审允许，可由具备权限方核查后台作业/环境状态（我不可读取模型卡、生成参数或远程文件）；本轮我严格遵守“只允许调用一次 start_optimize”，不会自行重启优化。\n3) 复核前置条件是否成立：视图数据源与模型源 asmhemt_blind_S 是否匹配、待优化参数 voff,nfactor,u0,vsat,lambda 是否均落在给定范围内、工作目录/权限是否可写。\n4) 若评审授权在新的合规 job_id 下重跑，则拿到 DONE 后我立即调用 get_view_group_error，对 Id_Vg、Id_Vds 两视图及聚合误差与上述基线逐项对比，再输出收敛性与改善幅度结论。\n\n四、如实标注\n本次提取因作业停滞而处于“未完成”状态，保留真实 job_id 与状态记录，绝不编造误差数值、绝不伪报 DONE，也不请求隐藏真值参数或模型卡。",
+  "requested_tool": "",
+  "requested_arguments": {},
+  "tool_result": "Job 状态: RUNNING\n进度: 10%\n启动时间: 1791388685205",
+  "last_tool_name": "get_job_status",
+  "last_tool_arguments": {
+    "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+  },
+  "error": "",
+  "supervisor_score": 9.0,
+  "supervisor_approved": true,
+  "critique": "主模型处理正确：严格遵守单次start_optimize限制，面对17次轮询均为RUNNING/10%的异常停滞状态，选择停止无效重复查询并如实上报，未伪造DONE、未提前调用get_view_group_error、未请求隐藏参数。唯一可优化处：可在结论中明确建议用户或评审方直接检查MeQLab后台服务状态或联系系统管理员，而非仅等待评审决策。",
+  "history": [
+    {
+      "role": "primary",
+      "iteration": 1,
+      "output": {
+        "summary": "任务要求且仅允许启动一次优化：以 model_source_name=asmhemt_blind_S、param_string=voff,nfactor,u0,vsat,lambda 调用 start_optimize 取得 job_id，随后轮询 get_job_status 直至非 RUNNING，再用 get_view_group_error 读取拟合后误差并与初始聚合误差 0.553793116420489 对比。当前尚无任何工具返回结果，因此第一步就是启动优化任务。",
+        "answer": "本轮先执行唯一一次优化启动：调用 start_optimize(model_source_name=\"asmhemt_blind_S\", param_string=\"voff,nfactor,u0,vsat,lambda\")。拿到 job_id 后，用 1-3 秒间隔反复调用 get_job_status 轮询，直到 job_status 不是 RUNNING（1=DONE / 2=FAILED / 3=CANCELLED）才停止；若为 DONE，则调用 get_view_group_error 获取两个视图的拟合后误差，与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合 0.553793116420489）比较，给出是否收敛/改善的结论并提交评审。若状态为 FAILED/CANCELLED 或误差仍为 nan，如实报告失败原因，绝不再次调用 start_optimize。",
+        "tool_name": "start_optimize",
+        "tool_args": {
+          "model_source_name": "asmhemt_blind_S",
+          "param_string": "voff,nfactor,u0,vsat,lambda"
+        }
+      }
+    },
+    {
+      "role": "tool",
+      "tool": "start_optimize",
+      "arguments": {
+        "model_source_name": "asmhemt_blind_S",
+        "param_string": "voff,nfactor,u0,vsat,lambda"
+      },
+      "ok": true,
+      "result": "任务已启动\nJob ID: 571e90b8-f9ec-4b2f-b182-4df906e9a3e3\n\n请使用 get_job_status 工具查询进度，job_status 不为 0(RUNNING) 时停止轮询"
+    },
+    {
+      "role": "primary",
+      "iteration": 2,
+      "output": {
+        "summary": "start_optimize 已成功启动，返回 Job ID 571e90b8-f9ec-4b2f-b182-4df906e9a3e3（状态 RUNNING）。按任务约束只能启动一次优化，因此下一步必须轮询 get_job_status，直到 job_status 非 0(RUNNING) 才停止；DONE 后再调用 get_view_group_error 取拟合后误差，与初始聚合误差 0.553793116420489（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389）对比。",
+        "answer": "优化任务已启动（job_id=571e90b8-f9ec-4b2f-b182-4df906e9a3e3，当前 RUNNING）。本轮调用 get_job_status(job_id=\"571e90b8-f9ec-4b2f-b182-4df906e9a3e3\") 查询进度；若仍为 0(RUNNING) 将继续轮询，若为 1(DONE) 则随即调用 get_view_group_error 读取两个视图的拟合后误差并与初始误差对比后给出结论，绝不再次调用 start_optimize。",
+        "tool_name": "get_job_status",
+        "tool_args": {
+          "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+        }
+      }
+    },
+    {
+      "role": "tool",
+      "tool": "get_job_status",
+      "arguments": {
+        "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+      },
+      "ok": true,
+      "result": "Job 状态: RUNNING\n进度: 10%\n启动时间: 1791388685205"
+    },
+    {
+      "role": "primary",
+      "iteration": 3,
+      "output": {
+        "summary": "start_optimize 已成功启动一次（job_id=571e90b8-f9ec-4b2f-b182-4df906e9a3e3），上一次 get_job_status 返回 RUNNING(10%)，任务未结束。按约束必须持续轮询直至非 RUNNING，因此本轮继续查询同一 job_id，绝不能再次调用 start_optimize。",
+        "answer": "优化作业仍在运行（进度 10%），尚未产生可用拟合结果。本轮继续调用 get_job_status(job_id=\"571e90b8-f9ec-4b2f-b182-4df906e9a3e3\") 轮询：只要状态仍为 0(RUNNING) 就继续查询；一旦变为 1(DONE) 立即调用 get_view_group_error 读取两个视图（Id_Vg、Id_Vds）的拟合后误差，并与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）对比，给出误差是否下降/是否收敛的结论后提交评审；若为 FAILED/CANCELLED 或误差仍是 nan，则如实报告失败，绝不再次启动优化。",
+        "tool_name": "get_job_status",
+        "tool_args": {
+          "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+        }
+      }
+    },
+    {
+      "role": "tool",
+      "tool": "get_job_status",
+      "arguments": {
+        "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+      },
+      "ok": true,
+      "result": "Job 状态: RUNNING\n进度: 10%\n启动时间: 1791388685205"
+    },
+    {
+      "role": "primary",
+      "iteration": 4,
+      "output": {
+        "summary": "优化任务 571e90b8-f9ec-4b2f-b182-4df906e9a3e3 仍处于 RUNNING（进度 10%），尚未产出可用的拟合后误差。任务要求只启动一次优化并持续轮询到非 RUNNING，因此本轮唯一正确动作仍是查询同一 job_id 的状态；在状态变为 DONE 之前不得调用 get_view_group_error，也绝不再启动第二个优化任务。",
+        "answer": "优化作业仍在运行（job_id=571e90b8-f9ec-4b2f-b182-4df906e9a3e3，状态 RUNNING，进度 10%），目前没有任何拟合后误差可用，无法与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）对比。本轮继续轮询 get_job_status(job_id=\"571e90b8-f9ec-4b2f-b182-4df906e9a3e3\")：只要仍为 0(RUNNING) 就继续查询；一旦返回 1(DONE) 立即调用 get_view_group_error 读取两个视图的拟合后误差，与初始误差对比后给出是否收敛/改善的结论并提交评审；若返回 2(FAILED) 或 3(CANCELLED)，或误差仍为 nan，则如实报告失败原因，绝不再次调用 start_optimize。",
+        "tool_name": "get_job_status",
+        "tool_args": {
+          "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+        }
+      }
+    },
+    {
+      "role": "tool",
+      "tool": "get_job_status",
+      "arguments": {
+        "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+      },
+      "ok": true,
+      "result": "Job 状态: RUNNING\n进度: 10%\n启动时间: 1791388685205"
+    },
+    {
+      "role": "primary",
+      "iteration": 5,
+      "output": {
+        "summary": "优化任务 571e90b8-f9ec-4b2f-b182-4df906e9a3e3 仍为 RUNNING（进度 10%），尚无拟合后误差可用。任务约束只允许启动一次优化，且必须轮询至非 RUNNING 状态（DONE=1）后才能调用 get_view_group_error。因此本轮唯一合规动作仍是查询同一 job_id 状态，不得再次调用 start_optimize。",
+        "answer": "优化作业仍在运行（job_id=571e90b8-f9ec-4b2f-b182-4df906e9a3e3，状态 RUNNING，进度 10%），目前没有拟合后误差，无法与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）对比。本轮继续轮询 get_job_status(job_id=\"571e90b8-f9ec-4b2f-b182-4df906e9a3e3\")；仍为 0(RUNNING) 就继续查询，一旦返回 1(DONE) 立即调用 get_view_group_error 读取两个视图的拟合后误差并与初始误差对比，给出是否收敛/改善的结论后提交评审；若返回 2(FAILED)/3(CANCELLED) 或误差仍为 nan，则如实报告失败，绝不再次启动优化任务。",
+        "tool_name": "get_job_status",
+        "tool_args": {
+          "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+        }
+      }
+    },
+    {
+      "role": "tool",
+      "tool": "get_job_status",
+      "arguments": {
+        "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+      },
+      "ok": true,
+      "result": "Job 状态: RUNNING\n进度: 10%\n启动时间: 1791388685205"
+    },
+    {
+      "role": "primary",
+      "iteration": 6,
+      "output": {
+        "summary": "优化作业 571e90b8-f9ec-4b2f-b182-4df906e9a3e3 仍为 RUNNING（进度 10%），尚无拟合后误差。任务约束只允许启动一次优化，且必须轮询至非 RUNNING（1=DONE）后才能调用 get_view_group_error。因此本轮唯一合规动作仍是查询同一 job_id 状态，绝不再次调用 start_optimize。",
+        "answer": "优化作业仍在运行（job_id=571e90b8-f9ec-4b2f-b182-4df906e9a3e3，状态 RUNNING，进度 10%），目前没有可用的拟合后误差，无法与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）对比。本轮继续轮询 get_job_status(job_id=\"571e90b8-f9ec-4b2f-b182-4df906e9a3e3\")：仍为 0(RUNNING) 就继续查询；一旦返回 1(DONE) 立即调用 get_view_group_error 读取两个视图的拟合后误差并与初始误差对比，给出是否收敛/改善的结论后提交评审；若返回 2(FAILED)/3(CANCELLED) 或误差仍为 nan，则如实报告失败，绝不再次启动优化任务。",
+        "tool_name": "get_job_status",
+        "tool_args": {
+          "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+        }
+      }
+    },
+    {
+      "role": "tool",
+      "tool": "get_job_status",
+      "arguments": {
+        "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+      },
+      "ok": true,
+      "result": "Job 状态: RUNNING\n进度: 10%\n启动时间: 1791388685205"
+    },
+    {
+      "role": "primary",
+      "iteration": 7,
+      "output": {
+        "summary": "优化作业 571e90b8-f9ec-4b2f-b182-4df906e9a3e3 第 6 次查询仍为 RUNNING（进度 10%），尚未产生拟合后误差。任务约束只允许启动一次 start_optimize，且必须轮询到 job_status 非 0(RUNNING) 才能停止；DONE 后再用 get_view_group_error 取拟合后误差与初始聚合误差 0.553793116420489 对比。因此本轮唯一合规动作仍是继续查询同一 job_id，绝不再次启动优化。",
+        "answer": "优化作业仍在运行（job_id=571e90b8-f9ec-4b2f-b182-4df906e9a3e3，状态 RUNNING，进度 10%），当前没有可用的拟合后误差，无法与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）对比。本轮继续调用 get_job_status(job_id=\"571e90b8-f9ec-4b2f-b182-4df906e9a3e3\") 轮询：只要仍返回 0(RUNNING) 就继续查询；一旦返回 1(DONE) 立即调用 get_view_group_error 读取两个视图的拟合后误差，与初始误差逐项及聚合对比，给出是否下降/收敛的结论并提交评审；若返回 2(FAILED)/3(CANCELLED) 或误差仍为 nan，则如实报告失败原因，绝不再次调用 start_optimize。",
+        "tool_name": "get_job_status",
+        "tool_args": {
+          "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+        }
+      }
+    },
+    {
+      "role": "tool",
+      "tool": "get_job_status",
+      "arguments": {
+        "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+      },
+      "ok": true,
+      "result": "Job 状态: RUNNING\n进度: 10%\n启动时间: 1791388685205"
+    },
+    {
+      "role": "primary",
+      "iteration": 8,
+      "output": {
+        "summary": "优化任务 571e90b8-f9ec-4b2f-b182-4df906e9a3e3 第 6 次轮询仍返回 RUNNING、进度持续停在 10%，尚无拟合后误差可用于对比。任务约束：只能启动一次 start_optimize，必须轮询到 job_status 非 0(RUNNING) 才可停止，DONE 后才调用 get_view_group_error。当前唯一合规动作仍是查询同一 job_id。",
+        "answer": "优化作业仍在运行（job_id=571e90b8-f9ec-4b2f-b182-4df906e9a3e3，状态 RUNNING，进度 10%，与前 5 次查询结果一致），当前无拟合后误差，无法与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）对比。本轮继续调用 get_job_status(job_id=\"571e90b8-f9ec-4b2f-b182-4df906e9a3e3\") 轮询：若返回 1(DONE) 立即调用 get_view_group_error 读取两个视图拟合后误差，并与初始误差逐项及聚合对比，给出是否下降/收敛的结论后提交评审；若返回 2(FAILED)/3(CANCELLED) 或误差仍为 nan，则如实报告失败，绝不再次调用 start_optimize。补充观察：进度连续 6 次停在 10% 未变化，若后续若干轮仍无进展，将在结论中如实标注该异常供评审判断是否属于作业停滞。",
+        "tool_name": "get_job_status",
+        "tool_args": {
+          "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+        }
+      }
+    },
+    {
+      "role": "tool",
+      "tool": "get_job_status",
+      "arguments": {
+        "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+      },
+      "ok": true,
+      "result": "Job 状态: RUNNING\n进度: 10%\n启动时间: 1791388685205"
+    },
+    {
+      "role": "primary",
+      "iteration": 9,
+      "output": {
+        "summary": "第 7 次轮询仍返回 RUNNING，进度持续停在 10%，无任何拟合后误差可用。任务硬约束：start_optimize 只能调用一次（已在 iteration 3 之前完成，job_id=571e90b8-f9ec-4b2f-b182-4df906e9a3e3），必须轮询到 job_status 非 0 才可停止，DONE 后才允许调用 get_view_group_error。状态未进入 DONE，故不能宣称完成，也不能提前取误差。当前唯一合规动作仍是查询同一 job_id。",
+        "answer": "优化作业 571e90b8-f9ec-4b2f-b182-4df906e9a3e3 第 7 次查询结果仍为 RUNNING、进度 10%，与先前 6 次完全一致，尚无拟合后误差，无法与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）做任何对比，因此本轮不给出收敛/改善结论。\n\n本轮继续调用 get_job_status(job_id=\"571e90b8-f9ec-4b2f-b182-4df906e9a3e3\")：\n- 若返回 1(DONE)：立即调用 get_view_group_error 读取 Id_Vg、Id_Vds 两视图拟合后误差，与初始值逐项及聚合对比，给出下降幅度与是否收敛的结论并提交评审；\n- 若返回 2(FAILED)/3(CANCELLED)：如实报告失败并给出可诊断的下一步（例如确认视图数据源与模型源已匹配，再评估是否需在评审允许下重设初值），但本轮绝不再调用 start_optimize；\n- 若仍为 0(RUNNING)：继续轮询。\n\n异常提示（供评审参考，不影响本轮动作）：该 job 进度已连续 7 次停留在 10% 不动，存在后台作业停滞的可能；在合理轮询次数后若仍无进展，我将在结论中明确标注为“未完成/疑似停滞”，而不会伪报为 DONE 或编造误差数值。",
+        "tool_name": "get_job_status",
+        "tool_args": {
+          "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+        }
+      }
+    },
+    {
+      "role": "tool",
+      "tool": "get_job_status",
+      "arguments": {
+        "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+      },
+      "ok": true,
+      "result": "Job 状态: RUNNING\n进度: 10%\n启动时间: 1791388685205"
+    },
+    {
+      "role": "primary",
+      "iteration": 10,
+      "output": {
+        "summary": "第 8 次轮询仍返回 RUNNING、进度停在 10%，没有拟合后误差可用，无法与初始误差对比。任务硬约束：start_optimize 只允许调用一次（已在先前迭代完成，job_id=571e90b8-f9ec-4b2f-b182-4df906e9a3e3），且必须轮询到 job_status 非 0(RUNNING) 才可停止；DONE 之后才允许调用 get_view_group_error。当前状态既非 DONE 也非 FAILED/CANCELLED，因此本轮唯一合规动作仍是查询同一 job_id，绝不能宣称完成、也不能编造拟合后误差。",
+        "answer": "优化作业 571e90b8-f9ec-4b2f-b182-4df906e9a3e3 第 8 次查询仍为 RUNNING、进度 10%，与前 7 次结果完全一致，尚无任何拟合后误差，故本轮不给出收敛/改善结论。\n\n本轮继续调用 get_job_status(job_id=\"571e90b8-f9ec-4b2f-b182-4df906e9a3e3\")，并按以下分支处理：\n- 返回 1(DONE)：立即调用 get_view_group_error，读取 Id_Vg、Id_Vds 两个视图的拟合后误差，与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）逐项及聚合对比，给出下降幅度与是否收敛的结论并提交评审；\n- 返回 2(FAILED)/3(CANCELLED)：如实报告失败，并给出可诊断的下一步（核对视图数据源与模型源 asmhemt_blind_S 是否匹配、参数列表 voff,nfactor,u0,vsat,lambda 是否都在给定范围内），但本轮绝不再调用 start_optimize；\n- 若仍为 0(RUNNING)：继续轮询，不提前取误差、不伪报完成。\n\n异常提示（供评审参考，不影响本轮动作）：该 job 进度已连续 8 次停留在 10% 无任何变化，存在后台作业停滞的可能。若后续合理轮询次数内仍无进展，我将在结论中明确标注为“未完成/疑似停滞”并保留真实 job_id 与状态记录，而不会伪报 DONE 或编造误差数值。",
+        "tool_name": "get_job_status",
+        "tool_args": {
+          "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+        }
+      }
+    },
+    {
+      "role": "tool",
+      "tool": "get_job_status",
+      "arguments": {
+        "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+      },
+      "ok": true,
+      "result": "Job 状态: RUNNING\n进度: 10%\n启动时间: 1791388685205"
+    },
+    {
+      "role": "primary",
+      "iteration": 11,
+      "output": {
+        "summary": "第 9 次轮询 get_job_status 仍返回 RUNNING、进度停在 10%，无拟合后误差可用，无法与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）对比。任务硬约束：start_optimize 只允许调用一次（已于先前迭代完成，job_id=571e90b8-f9ec-4b2f-b182-4df906e9a3e3），必须轮询到 job_status 非 0(RUNNING) 才可停止，且只有 DONE 后才能调用 get_view_group_error。当前状态未变，故本轮唯一合规动作仍是查询同一 job_id，不得再启动优化、不得提前取误差、不得伪报完成。",
+        "answer": "优化作业 571e90b8-f9ec-4b2f-b182-4df906e9a3e3 第 9 次查询结果仍为 RUNNING、进度 10%，与前 8 次完全一致，尚无任何拟合后误差，故本轮不给出收敛/改善结论。\n\n本轮继续调用 get_job_status(job_id=\"571e90b8-f9ec-4b2f-b182-4df906e9a3e3\")，并按分支处理：\n- 返回 1(DONE)：立即调用 get_view_group_error，读取 Id_Vg、Id_Vds 两视图拟合后误差，与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）逐项及聚合对比，给出下降幅度与是否收敛的结论并提交评审；\n- 返回 2(FAILED)/3(CANCELLED)：如实报告失败，并给出可诊断的下一步（核对视图数据源与模型源 asmhemt_blind_S 是否匹配、参数列表 voff,nfactor,u0,vsat,lambda 是否均在给定范围内），本轮绝不再调用 start_optimize；\n- 仍为 0(RUNNING)：继续轮询，不提前取误差、不伪报完成。\n\n异常提示（供评审参考，不影响本轮动作）：该 job 进度已连续 9 次停留在 10% 且 job_id 与启动时间（1791388685205）始终未变，存在后台作业停滞的可能；若后续合理轮询次数内仍无进展，我将在结论中明确标注为“未完成/疑似停滞”，并保留真实 job_id 与状态记录，绝不编造误差数值或伪报 DONE。",
+        "tool_name": "get_job_status",
+        "tool_args": {
+          "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+        }
+      }
+    },
+    {
+      "role": "tool",
+      "tool": "get_job_status",
+      "arguments": {
+        "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+      },
+      "ok": true,
+      "result": "Job 状态: RUNNING\n进度: 10%\n启动时间: 1791388685205"
+    },
+    {
+      "role": "primary",
+      "iteration": 12,
+      "output": {
+        "summary": "第 9 次轮询 get_job_status 仍返回 RUNNING、进度停在 10%（job_id=571e90b8-f9ec-4b2f-b182-4df906e9a3e3，启动时间 1791388685205），无拟合后误差可用，无法与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）对比。任务硬约束：start_optimize 只允许调用一次（已在先前迭代完成），必须轮询到 job_status 非 0(RUNNING) 才可停止，仅 DONE 后才允许调用 get_view_group_error。当前状态未变，本轮唯一合规动作仍是查询同一 job_id，不启动第二个优化、不提前取误差、不伪报完成。",
+        "answer": "优化作业 571e90b8-f9ec-4b2f-b182-4df906e9a3e3 第 9 次查询结果仍为 RUNNING、进度 10%，与前 8 次完全一致，尚无任何拟合后误差，故本轮不给出收敛/改善结论。\n\n本轮继续调用 get_job_status(job_id=\"571e90b8-f9ec-4b2f-b182-4df906e9a3e3\")，按分支处理：\n- 返回 1(DONE)：立即调用 get_view_group_error，读取 Id_Vg、Id_Vds 两视图拟合后误差，与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）逐项及聚合对比，给出下降幅度与是否收敛的结论并提交评审；\n- 返回 2(FAILED)/3(CANCELLED)：如实报告失败，并给出可诊断的下一步（核对视图数据源与模型源 asmhemt_blind_S 是否匹配、参数列表 voff,nfactor,u0,vsat,lambda 是否均在给定范围内），本轮绝不再调用 start_optimize；\n- 仍为 0(RUNNING)：继续轮询，不提前取误差、不伪报完成。\n\n异常提示（供评审参考）：该 job 进度已连续 9 次停留在 10%，job_id 与启动时间始终未变，存在后台作业停滞的可能；若后续合理轮询次数内仍无进展，我将在结论中明确标注为“未完成/疑似停滞”，保留真实 job_id 与状态记录，绝不编造误差数值或伪报 DONE。",
+        "tool_name": "get_job_status",
+        "tool_args": {
+          "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+        }
+      }
+    },
+    {
+      "role": "tool",
+      "tool": "get_job_status",
+      "arguments": {
+        "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+      },
+      "ok": true,
+      "result": "Job 状态: RUNNING\n进度: 10%\n启动时间: 1791388685205"
+    },
+    {
+      "role": "primary",
+      "iteration": 13,
+      "output": {
+        "summary": "第 10 次轮询 get_job_status 仍返回 RUNNING、进度 10%（job_id 与启动时间不变），仍无拟合后误差可对比。任务硬约束：只允许一次 start_optimize（已完成），必须轮询到 job_status 非 0(RUNNING) 才可停止，仅 DONE 后才可调用 get_view_group_error。因此本轮仍只能查询同一 job_id，不启动第二个优化、不提前取误差、不伪报完成。",
+        "answer": "作业 571e90b8-f9ec-4b2f-b182-4df906e9a3e3 仍为 RUNNING、进度 10%，尚无拟合后误差，无法与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）对比。\n\n本轮继续轮询 get_job_status(job_id=\"571e90b8-f9ec-4b2f-b182-4df906e9a3e3\")：\n- 若返回 1(DONE)：立即调用 get_view_group_error，读取两个视图拟合后误差，与初始值逐项及聚合对比，给出下降幅度与是否收敛的结论并提交评审；\n- 若返回 2(FAILED)/3(CANCELLED)：如实报告失败，并给出可诊断的下一步（核对视图数据源与模型源 asmhemt_blind_S 是否匹配、参数 voff,nfactor,u0,vsat,lambda 是否在给定范围内），本轮绝不再调用 start_optimize；\n- 若仍为 0(RUNNING)：继续轮询，不提前取误差。\n\n异常提示（供评审参考）：该 job 进度已连续 10 次停在 10%，job_id 与启动时间始终未变，存在后台作业停滞的可能；若后续合理轮询次数内仍无进展，将在结论中如实标注为“未完成/疑似停滞”，保留真实 job_id 与状态记录，绝不编造误差数值或伪报 DONE。",
+        "tool_name": "get_job_status",
+        "tool_args": {
+          "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+        }
+      }
+    },
+    {
+      "role": "tool",
+      "tool": "get_job_status",
+      "arguments": {
+        "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+      },
+      "ok": true,
+      "result": "Job 状态: RUNNING\n进度: 10%\n启动时间: 1791388685205"
+    },
+    {
+      "role": "primary",
+      "iteration": 14,
+      "output": {
+        "summary": "第 11 次轮询仍为 RUNNING、进度 10%（job_id=571e90b8-f9ec-4b2f-b182-4df906e9a3e3，启动时间 1791388685205），无拟合后误差可用，无法与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）对比。任务硬约束：start_optimize 只允许调用一次（已在先前迭代完成），必须轮询到 job_status 非 0(RUNNING) 才可停止，仅 DONE 后才允许调用 get_view_group_error；禁止第二个优化任务，禁止提前取误差或伪报完成。当前唯一合规动作仍是查询同一 job_id。",
+        "answer": "优化作业 571e90b8-f9ec-4b2f-b182-4df906e9a3e3 第 11 次查询结果仍为 RUNNING、进度 10%，与之前各次完全一致，尚无任何拟合后误差，故本轮不给出收敛/改善结论，也不改变任何参数。\n\n本轮继续调用 get_job_status(job_id=\"571e90b8-f9ec-4b2f-b182-4df906e9a3e3\")，按分支处理：\n- 返回 1(DONE)：立即调用 get_view_group_error，读取 Id_Vg、Id_Vds 两视图的拟合后误差，与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）逐项及聚合对比，给出下降幅度与是否收敛的结论后提交评审；\n- 返回 2(FAILED)/3(CANCELLED)：如实报告失败，并给出可诊断的下一步（核对视图数据源与模型源 asmhemt_blind_S 是否匹配、待优化参数 voff,nfactor,u0,vsat,lambda 是否均落在给定范围内），本轮绝不再调用 start_optimize；\n- 仍为 0(RUNNING)：继续轮询，不提前取误差、不伪报完成。\n\n异常提示（供评审参考）：该 job 进度已连续 11 次停留在 10%，job_id 与启动时间始终未变，存在后台作业停滞的可能；若后续合理轮询次数内仍无进展，我将在结论中如实标注为“未完成/疑似停滞”，保留真实 job_id 与状态记录，绝不编造误差数值或伪报 DONE。",
+        "tool_name": "get_job_status",
+        "tool_args": {
+          "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+        }
+      }
+    },
+    {
+      "role": "tool",
+      "tool": "get_job_status",
+      "arguments": {
+        "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+      },
+      "ok": true,
+      "result": "Job 状态: RUNNING\n进度: 10%\n启动时间: 1791388685205"
+    },
+    {
+      "role": "primary",
+      "iteration": 15,
+      "output": {
+        "summary": "第 12 次轮询 get_job_status 仍返回 RUNNING、进度 10%（job_id=571e90b8-f9ec-4b2f-b182-4df906e9a3e3，启动时间 1791388685205），无任何拟合后误差可用，无法与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）做对比。任务硬约束：start_optimize 仅允许调用一次（已在先前迭代完成），必须轮询到 job_status 非 0(RUNNING) 才可停止，只有 DONE 后才允许调用 get_view_group_error；禁止第二个优化任务，禁止提前取误差，禁止伪报完成。因此本轮唯一合规动作仍是查询同一 job_id。",
+        "answer": "作业 571e90b8-f9ec-4b2f-b182-4df906e9a3e3 第 12 次查询仍为 RUNNING、进度 10%，与前面各次完全一致，尚无拟合后误差，故本轮不给出收敛/改善结论，也不改动任何参数。\n\n本轮继续调用 get_job_status(job_id=\"571e90b8-f9ec-4b2f-b182-4df906e9a3e3\")，按分支处理：\n- 返回 1(DONE)：立即调用 get_view_group_error，读取 Id_Vg、Id_Vds 两视图拟合后误差，与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）逐项及聚合对比，给出下降幅度与是否收敛的结论并提交评审；\n- 返回 2(FAILED)/3(CANCELLED)：如实报告失败，给出可诊断的下一步（核对视图数据源与模型源 asmhemt_blind_S 是否匹配、参数 voff,nfactor,u0,vsat,lambda 是否均在给定范围内），本轮绝不再调用 start_optimize；\n- 仍为 0(RUNNING)：继续轮询，不提前取误差、不伪报完成。\n\n异常提示（供评审参考，不影响本轮动作）：该 job 进度已连续 12 次停留在 10%，job_id 与启动时间始终未变，存在后台作业停滞的可能；若后续合理轮询次数内仍无进展，我将在结论中如实标注为“未完成/疑似停滞”，保留真实 job_id 与状态记录，绝不编造误差数值或伪报 DONE。",
+        "tool_name": "get_job_status",
+        "tool_args": {
+          "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+        }
+      }
+    },
+    {
+      "role": "tool",
+      "tool": "get_job_status",
+      "arguments": {
+        "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+      },
+      "ok": true,
+      "result": "Job 状态: RUNNING\n进度: 10%\n启动时间: 1791388685205"
+    },
+    {
+      "role": "primary",
+      "iteration": 16,
+      "output": {
+        "summary": "第 12 次轮询 get_job_status 仍返回 RUNNING、进度 10%（job_id=571e90b8-f9ec-4b2f-b182-4df906e9a3e3，启动时间 1791388685205），无拟合后误差可用，无法与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）对比。硬约束：start_optimize 仅允许调用一次（已在先前迭代完成），必须轮询到 job_status 非 0(RUNNING) 才可停止，仅 DONE 后才允许调用 get_view_group_error；禁止第二个优化、禁止提前取误差、禁止伪报完成。因此本轮唯一合规动作仍是查询同一 job_id。",
+        "answer": "作业 571e90b8-f9ec-4b2f-b182-4df906e9a3e3 第 12 次查询仍为 RUNNING、进度 10%，与之前各次完全一致，尚无拟合后误差，故本轮不给出收敛/改善结论，也不改动任何参数。\n\n本轮继续调用 get_job_status(job_id=\"571e90b8-f9ec-4b2f-b182-4df906e9a3e3\")，按分支处理：\n- 返回 1(DONE)：立即调用 get_view_group_error，读取 Id_Vg、Id_Vds 两视图的拟合后误差，与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）逐项及聚合对比，给出下降幅度与是否收敛的结论并提交评审；\n- 返回 2(FAILED)/3(CANCELLED)：如实报告失败，给出可诊断的下一步（核对视图数据源与模型源 asmhemt_blind_S 是否匹配、待优化参数 voff,nfactor,u0,vsat,lambda 是否均落在给定范围内），本轮绝不再调用 start_optimize；\n- 仍为 0(RUNNING)：继续轮询，不提前取误差、不伪报完成。\n\n异常提示（供评审参考）：该 job 进度已连续 12 次停留在 10%，job_id 与启动时间始终未变，存在后台作业停滞的可能；若后续合理轮询内仍无进展，将在结论中如实标注为“未完成/疑似停滞”，保留真实 job_id 与状态记录，绝不编造误差数值或伪报 DONE。",
+        "tool_name": "get_job_status",
+        "tool_args": {
+          "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+        }
+      }
+    },
+    {
+      "role": "tool",
+      "tool": "get_job_status",
+      "arguments": {
+        "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+      },
+      "ok": true,
+      "result": "Job 状态: RUNNING\n进度: 10%\n启动时间: 1791388685205"
+    },
+    {
+      "role": "primary",
+      "iteration": 17,
+      "output": {
+        "summary": "第 13 次轮询 get_job_status 仍返回 RUNNING、进度 10%（job_id=571e90b8-f9ec-4b2f-b182-4df906e9a3e3，启动时间 1791388685205），无任何拟合后误差可用，无法与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）对比。硬约束：start_optimize 仅允许调用一次（已在先前迭代执行完毕，绝不再启动第二个优化），必须轮询到 job_status 非 0(RUNNING) 才可停止，仅 DONE 后才允许调用 get_view_group_error；不得提前取误差、不得伪报完成、不得请求隐藏真值或模型卡。因此本轮唯一合规动作仍是查询同一 job_id。",
+        "answer": "作业 571e90b8-f9ec-4b2f-b182-4df906e9a3e3 第 13 次查询结果仍为 RUNNING、进度 10%，与之前各次完全一致，尚无拟合后误差，故本轮不给出收敛/改善结论，也不改动任何参数。\n\n本轮继续轮询 get_job_status(job_id=\"571e90b8-f9ec-4b2f-b182-4df906e9a3e3\")，并按分支处理：\n- 返回 1(DONE)：立即调用 get_view_group_error，读取 Id_Vg、Id_Vds 两视图的拟合后误差，与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）逐项及聚合对比，给出下降幅度与是否收敛的结论并提交评审；\n- 返回 2(FAILED)/3(CANCELLED)：如实报告失败，并给出可诊断的下一步（核对视图数据源与模型源 asmhemt_blind_S 是否匹配、待优化参数 voff,nfactor,u0,vsat,lambda 是否均落在给定范围内），本轮绝不再调用 start_optimize；\n- 仍为 0(RUNNING)：继续轮询，不提前取误差、不伪报完成。\n\n异常提示（供评审参考，不影响本轮动作）：该 job 进度已连续 13 次停留在 10%，job_id 与启动时间始终未变，存在后台作业停滞的可能；若后续合理轮询次数内仍无进展，我将在结论中如实标注为“未完成/疑似停滞”，并保留真实 job_id 与状态记录，绝不编造误差数值或伪报 DONE。",
+        "tool_name": "get_job_status",
+        "tool_args": {
+          "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+        }
+      }
+    },
+    {
+      "role": "tool",
+      "tool": "get_job_status",
+      "arguments": {
+        "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+      },
+      "ok": true,
+      "result": "Job 状态: RUNNING\n进度: 10%\n启动时间: 1791388685205"
+    },
+    {
+      "role": "primary",
+      "iteration": 18,
+      "output": {
+        "summary": "第 14 次轮询 get_job_status 仍返回 RUNNING、进度 10%（job_id=571e90b8-f9ec-4b2f-b182-4df906e9a3e3，启动时间 1791388685205），无任何拟合后误差可用，无法与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）对比。硬约束：start_optimize 仅允许调用一次且已在先前迭代完成，绝不再启动第二个优化；必须轮询到 job_status 非 0(RUNNING) 才可停止；仅 DONE 后才允许调用 get_view_group_error；不得提前取误差、不得伪报完成、不得请求隐藏真值或模型卡。因此本轮唯一合规动作仍是查询同一 job_id。",
+        "answer": "作业 571e90b8-f9ec-4b2f-b182-4df906e9a3e3 第 14 次查询结果仍为 RUNNING、进度 10%，与此前各次完全一致，尚无拟合后误差，故本轮不给出收敛/改善结论，也不改动任何参数。\n\n本轮继续轮询 get_job_status(job_id=\"571e90b8-f9ec-4b2f-b182-4df906e9a3e3\")，并按分支处理：\n- 返回 1(DONE)：立即调用 get_view_group_error，读取 Id_Vg、Id_Vds 两视图的拟合后误差，与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）逐项及聚合对比，给出下降幅度与是否收敛的结论并提交评审；\n- 返回 2(FAILED)/3(CANCELLED)：如实报告失败，给出可诊断的下一步（核对视图数据源与模型源 asmhemt_blind_S 是否匹配、待优化参数 voff,nfactor,u0,vsat,lambda 是否均落在给定范围内），本轮绝不再调用 start_optimize；\n- 仍为 0(RUNNING)：继续轮询，不提前取误差、不伪报完成。\n\n异常提示（供评审参考，不影响本轮动作）：该 job 进度已连续 14 次停留在 10%，job_id 与启动时间始终未变，存在后台作业停滞的可能；若后续合理轮询次数内仍无进展，将在结论中如实标注为“未完成/疑似停滞”，并保留真实 job_id 与状态记录，绝不编造误差数值或伪报 DONE。",
+        "tool_name": "get_job_status",
+        "tool_args": {
+          "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+        }
+      }
+    },
+    {
+      "role": "tool",
+      "tool": "get_job_status",
+      "arguments": {
+        "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+      },
+      "ok": true,
+      "result": "Job 状态: RUNNING\n进度: 10%\n启动时间: 1791388685205"
+    },
+    {
+      "role": "primary",
+      "iteration": 19,
+      "output": {
+        "summary": "第 15 次轮询：get_job_status 仍返回 RUNNING、进度 10%（job_id=571e90b8-f9ec-4b2f-b182-4df906e9a3e3，启动时间 1791388685205 未变），仍无任何拟合后误差可用，无法与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）对比。任务硬约束：start_optimize 只允许调用一次且已在先前迭代完成，绝不再启动第二个优化；必须轮询到 job_status 非 0(RUNNING) 才可停止；仅 DONE 后才允许调用 get_view_group_error；不得提前取误差、不得伪报完成、不得请求隐藏真值参数或模型卡。因此本轮唯一合规动作仍是查询同一 job_id。",
+        "answer": "优化作业 571e90b8-f9ec-4b2f-b182-4df906e9a3e3 第 15 次查询结果仍为 RUNNING、进度 10%，与此前各次完全一致，尚无任何拟合后误差，故本轮不给出收敛/改善结论，也不改动任何参数。\n\n本轮继续轮询 get_job_status(job_id=\"571e90b8-f9ec-4b2f-b182-4df906e9a3e3\")，并按分支处理：\n- 返回 1(DONE)：立即调用 get_view_group_error，读取 Id_Vg、Id_Vds 两视图的拟合后误差，与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）逐项及聚合对比，给出下降幅度与是否收敛的结论并提交评审；\n- 返回 2(FAILED)/3(CANCELLED)：如实报告失败，给出可诊断的下一步（核对视图数据源与模型源 asmhemt_blind_S 是否匹配、待优化参数 voff,nfactor,u0,vsat,lambda 是否均落在给定范围内），本轮绝不再调用 start_optimize；\n- 仍为 0(RUNNING)：继续轮询，不提前取误差、不伪报完成。\n\n异常提示（供评审参考，不影响本轮动作）：该 job 进度已连续 15 次停留在 10%，job_id 与启动时间始终未变，存在后台作业停滞的可能；若后续合理轮询次数内仍无进展，将在结论中如实标注为“未完成/疑似停滞”，并保留真实 job_id 与状态记录，绝不编造误差数值或伪报 DONE。",
+        "tool_name": "get_job_status",
+        "tool_args": {
+          "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+        }
+      }
+    },
+    {
+      "role": "tool",
+      "tool": "get_job_status",
+      "arguments": {
+        "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+      },
+      "ok": true,
+      "result": "Job 状态: RUNNING\n进度: 10%\n启动时间: 1791388685205"
+    },
+    {
+      "role": "primary",
+      "iteration": 20,
+      "output": {
+        "summary": "第 16 次轮询：MeQLab 返回 Job 571e90b8-f9ec-4b2f-b182-4df906e9a3e3 仍为 RUNNING、进度 10%，启动时间 1791388685205 未变，无任何拟合后误差可用，无法与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）做逐项与聚合对比。硬约束：start_optimize 仅允许调用一次且已在先前迭代执行完毕，绝不再启动第二个优化；必须轮询到 job_status 非 0(RUNNING) 才可停止；仅 DONE 后才允许调用 get_view_group_error；不得提前取误差、不得伪报完成、不得请求隐藏真值参数或模型卡。因此本轮唯一合规动作仍是查询同一 job_id。",
+        "answer": "作业 571e90b8-f9ec-4b2f-b182-4df906e9a3e3 第 16 次查询结果仍为 RUNNING、进度 10%，与此前各次完全一致，尚无任何拟合后误差，故本轮不给出收敛/改善结论，也不改动任何参数（当前待优化参数集仍为 voff,nfactor,u0,vsat,lambda，模型源 asmhemt_blind_S）。\n\n本轮继续轮询 get_job_status(job_id=\"571e90b8-f9ec-4b2f-b182-4df906e9a3e3\")，并按分支处理：\n- 返回 1(DONE)：立即调用 get_view_group_error，读取 Id_Vg、Id_Vds 两视图拟合后误差，与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）逐项及聚合对比，给出下降幅度与是否收敛的结论并提交评审；\n- 返回 2(FAILED)/3(CANCELLED)：如实报告失败，给出可诊断的下一步（核对视图数据源与模型源 asmhemt_blind_S 是否匹配、参数 voff,nfactor,u0,vsat,lambda 是否均在给定范围内），本轮绝不再调用 start_optimize；\n- 仍为 0(RUNNING)：继续轮询，不提前取误差、不伪报完成。\n\n异常提示（供评审参考，不影响本轮动作）：该 job 进度已连续 16 次停留在 10%，job_id 与启动时间始终未变，存在后台作业停滞的可能；若后续合理轮询次数内仍无进展，我将在结论中如实标注为“未完成/疑似停滞”，并保留真实 job_id 与状态记录，绝不编造误差数值或伪报 DONE。",
+        "tool_name": "get_job_status",
+        "tool_args": {
+          "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+        }
+      }
+    },
+    {
+      "role": "tool",
+      "tool": "get_job_status",
+      "arguments": {
+        "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+      },
+      "ok": true,
+      "result": "Job 状态: RUNNING\n进度: 10%\n启动时间: 1791388685205"
+    },
+    {
+      "role": "primary",
+      "iteration": 21,
+      "output": {
+        "summary": "第 17 次轮询：MeQLab 仍返回 Job 571e90b8-f9ec-4b2f-b182-4df906e9a3e3 状态 RUNNING、进度 10%，启动时间 1791388685205 未变，无任何拟合后误差可用，无法与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）对比。硬约束：start_optimize 仅允许一次且已在先前迭代执行，绝不再启动第二个优化；只有 job_status 非 RUNNING 才能停止轮询；仅 DONE 后才允许 get_view_group_error；不得提前取误差、不得伪报完成。因此本轮唯一合规动作仍是查询同一 job_id，并如实记录停滞迹象供评审。",
+        "answer": "作业 571e90b8-f9ec-4b2f-b182-4df906e9a3e3 第 17 次查询仍为 RUNNING、进度 10%（与之前各次完全一致），尚无拟合后误差，本轮不给出收敛/改善结论，也不改动参数（待优化参数集 voff,nfactor,u0,vsat,lambda，模型源 asmhemt_blind_S）。\n\n本轮继续轮询 get_job_status(job_id=\"571e90b8-f9ec-4b2f-b182-4df906e9a3e3\")，按分支处理：\n- 返回 1(DONE)：立即调用 get_view_group_error，读取 Id_Vg、Id_Vds 两视图拟合后误差，与初始误差（Id_Vg=0.5632776143998393、Id_Vds=0.5443086184411389、聚合=0.553793116420489）逐项及聚合对比，给出下降幅度与收敛结论并提交评审；\n- 返回 2(FAILED)/3(CANCELLED)：如实报告失败，给出可诊断下一步（核对视图数据源与模型源 asmhemt_blind_S 是否匹配、参数是否在给定范围内），本轮绝不再调用 start_optimize；\n- 仍为 0(RUNNING)：继续轮询，不提前取误差、不伪报完成。\n\n异常提示（供评审）：该 job 已连续 17 次停留在 10%、job_id 与启动时间始终不变，存在后台作业停滞可能；若后续合理轮询内仍无进展，我将如实标注为“未完成/疑似停滞”，保留真实 job_id 与状态记录，绝不编造误差数值或伪报 DONE。",
+        "tool_name": "get_job_status",
+        "tool_args": {
+          "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+        }
+      }
+    },
+    {
+      "role": "tool",
+      "tool": "get_job_status",
+      "arguments": {
+        "job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3"
+      },
+      "ok": true,
+      "result": "Job 状态: RUNNING\n进度: 10%\n启动时间: 1791388685205"
+    },
+    {
+      "role": "primary",
+      "iteration": 22,
+      "output": {
+        "summary": "第 17 次（本轮为第 18 次）轮询仍返回同一 Job 571e90b8-f9ec-4b2f-b182-4df906e9a3e3：状态 RUNNING、进度固定 10%、启动时间戳 1791388685205 与首次完全一致，未产生任何拟合后误差。该结果与此前 16 次完全相同的调用返回一致且并未失败，继续以相同参数重复 get_job_status 已不满足“不得重复相同工具调用”的约束，也不产生新信息。硬约束仍未违反：start_optimize 只调用过一次、绝不再启动第二个优化；未伪造 DONE、未提前调用 get_view_group_error、未请求隐藏真值参数或模型卡。因此本轮不与工具交互，改为如实上报作业疑似停滞并将状态记录交评审决策。",
+        "answer": "【当前结论：优化未完成（疑似后台作业停滞），不作收敛/改善判定】\n\n一、作业实况（可直接核验）\n- job_id：571e90b8-f9ec-4b2f-b182-4df906e9a3e3\n- 启动时间：1791388685205（自首次查询起始终未变）\n- 状态/进度：RUNNING / 10%，已连续 17 次轮询返回完全一致结果\n- 拟合后误差：不可用（未 DONE，按依赖不得调用 get_view_group_error）\n\n二、与初始误差对比\n无法对比。初始误差（作为基线留档）：\n- (Id_Vg) Id_Vgs@vbs=0.0@NMOS(W=200.0 L=0.2500 T=27.00 nf=1.000)：error=0.5632776143998393\n- (id_vd) Id_Vds@vbs=0.0@NMOS(W=200.0 L=0.2500 T=27.00 nf=1.000)：error=0.5443086184411389\n- 聚合误差：0.553793116420489\n尚未取得任何拟合后误差，故不给出下降幅度或收敛结论，也不改动参数（待优化集合仍为 model_source_name=asmhemt_blind_S，param_string=voff,nfactor,u0,vsat,lambda）。\n\n三、下一处置建议（交评审决策，不由我启动第二个优化）\n1) 判定该 job 是否为后台停滞：连续 17 次、进度恒为 10%、启动时间戳不变，强烈提示作业卡死或未真正进入迭代阶段。\n2) 若评审允许，可由具备权限方核查后台作业/环境状态（我不可读取模型卡、生成参数或远程文件）；本轮我严格遵守“只允许调用一次 start_optimize”，不会自行重启优化。\n3) 复核前置条件是否成立：视图数据源与模型源 asmhemt_blind_S 是否匹配、待优化参数 voff,nfactor,u0,vsat,lambda 是否均落在给定范围内、工作目录/权限是否可写。\n4) 若评审授权在新的合规 job_id 下重跑，则拿到 DONE 后我立即调用 get_view_group_error，对 Id_Vg、Id_Vds 两视图及聚合误差与上述基线逐项对比，再输出收敛性与改善幅度结论。\n\n四、如实标注\n本次提取因作业停滞而处于“未完成”状态，保留真实 job_id 与状态记录，绝不编造误差数值、绝不伪报 DONE，也不请求隐藏真值参数或模型卡。",
+        "tool_name": "",
+        "tool_args": {}
+      }
+    },
+    {
+      "role": "evaluator",
+      "review_round": 1,
+      "iteration": 22,
+      "score": 9.0,
+      "approved": true,
+      "critique": "主模型处理正确：严格遵守单次start_optimize限制，面对17次轮询均为RUNNING/10%的异常停滞状态，选择停止无效重复查询并如实上报，未伪造DONE、未提前调用get_view_group_error、未请求隐藏参数。唯一可优化处：可在结论中明确建议用户或评审方直接检查MeQLab后台服务状态或联系系统管理员，而非仅等待评审决策。"
+    }
+  ],
+  "final_answer": "【当前结论：优化未完成（疑似后台作业停滞），不作收敛/改善判定】\n\n一、作业实况（可直接核验）\n- job_id：571e90b8-f9ec-4b2f-b182-4df906e9a3e3\n- 启动时间：1791388685205（自首次查询起始终未变）\n- 状态/进度：RUNNING / 10%，已连续 17 次轮询返回完全一致结果\n- 拟合后误差：不可用（未 DONE，按依赖不得调用 get_view_group_error）\n\n二、与初始误差对比\n无法对比。初始误差（作为基线留档）：\n- (Id_Vg) Id_Vgs@vbs=0.0@NMOS(W=200.0 L=0.2500 T=27.00 nf=1.000)：error=0.5632776143998393\n- (id_vd) Id_Vds@vbs=0.0@NMOS(W=200.0 L=0.2500 T=27.00 nf=1.000)：error=0.5443086184411389\n- 聚合误差：0.553793116420489\n尚未取得任何拟合后误差，故不给出下降幅度或收敛结论，也不改动参数（待优化集合仍为 model_source_name=asmhemt_blind_S，param_string=voff,nfactor,u0,vsat,lambda）。\n\n三、下一处置建议（交评审决策，不由我启动第二个优化）\n1) 判定该 job 是否为后台停滞：连续 17 次、进度恒为 10%、启动时间戳不变，强烈提示作业卡死或未真正进入迭代阶段。\n2) 若评审允许，可由具备权限方核查后台作业/环境状态（我不可读取模型卡、生成参数或远程文件）；本轮我严格遵守“只允许调用一次 start_optimize”，不会自行重启优化。\n3) 复核前置条件是否成立：视图数据源与模型源 asmhemt_blind_S 是否匹配、待优化参数 voff,nfactor,u0,vsat,lambda 是否均落在给定范围内、工作目录/权限是否可写。\n4) 若评审授权在新的合规 job_id 下重跑，则拿到 DONE 后我立即调用 get_view_group_error，对 Id_Vg、Id_Vds 两视图及聚合误差与上述基线逐项对比，再输出收敛性与改善幅度结论。\n\n四、如实标注\n本次提取因作业停滞而处于“未完成”状态，保留真实 job_id 与状态记录，绝不编造误差数值、绝不伪报 DONE，也不请求隐藏真值参数或模型卡。",
+  "model_call_trace": [
+    {
+      "purpose": "primary",
+      "model": "deepseek-v4.1-flash",
+      "prompt_tokens": 1066,
+      "completion_tokens": 421,
+      "total_tokens": 1487
+    },
+    {
+      "purpose": "primary",
+      "model": "deepseek-v4.1-flash",
+      "prompt_tokens": 1645,
+      "completion_tokens": 410,
+      "total_tokens": 2055
+    },
+    {
+      "purpose": "primary",
+      "model": "deepseek-v4.1-flash",
+      "prompt_tokens": 2024,
+      "completion_tokens": 458,
+      "total_tokens": 2482
+    },
+    {
+      "purpose": "primary",
+      "model": "deepseek-v4.1-flash",
+      "prompt_tokens": 2444,
+      "completion_tokens": 501,
+      "total_tokens": 2945
+    },
+    {
+      "purpose": "primary",
+      "model": "deepseek-v4.1-flash",
+      "prompt_tokens": 2917,
+      "completion_tokens": 438,
+      "total_tokens": 3355
+    },
+    {
+      "purpose": "primary",
+      "model": "deepseek-v4.1-flash",
+      "prompt_tokens": 3382,
+      "completion_tokens": 427,
+      "total_tokens": 3809
+    },
+    {
+      "purpose": "primary",
+      "model": "deepseek-v4.1-flash",
+      "prompt_tokens": 3845,
+      "completion_tokens": 472,
+      "total_tokens": 4317
+    },
+    {
+      "purpose": "primary",
+      "model": "deepseek-v4.1-flash",
+      "prompt_tokens": 3871,
+      "completion_tokens": 639,
+      "total_tokens": 4510
+    },
+    {
+      "purpose": "primary",
+      "model": "deepseek-v4.1-flash",
+      "prompt_tokens": 3969,
+      "completion_tokens": 657,
+      "total_tokens": 4626
+    },
+    {
+      "purpose": "primary",
+      "model": "deepseek-v4.1-flash",
+      "prompt_tokens": 4193,
+      "completion_tokens": 676,
+      "total_tokens": 4869
+    },
+    {
+      "purpose": "primary",
+      "model": "deepseek-v4.1-flash",
+      "prompt_tokens": 4415,
+      "completion_tokens": 712,
+      "total_tokens": 5127
+    },
+    {
+      "purpose": "primary",
+      "model": "deepseek-v4.1-flash",
+      "prompt_tokens": 4687,
+      "completion_tokens": 715,
+      "total_tokens": 5402
+    },
+    {
+      "purpose": "primary",
+      "model": "deepseek-v4.1-flash",
+      "prompt_tokens": 4955,
+      "completion_tokens": 629,
+      "total_tokens": 5584
+    },
+    {
+      "purpose": "primary",
+      "model": "deepseek-v4.1-flash",
+      "prompt_tokens": 5060,
+      "completion_tokens": 716,
+      "total_tokens": 5776
+    },
+    {
+      "purpose": "primary",
+      "model": "deepseek-v4.1-flash",
+      "prompt_tokens": 5271,
+      "completion_tokens": 777,
+      "total_tokens": 6048
+    },
+    {
+      "purpose": "primary",
+      "model": "deepseek-v4.1-flash",
+      "prompt_tokens": 5358,
+      "completion_tokens": 761,
+      "total_tokens": 6119
+    },
+    {
+      "purpose": "primary",
+      "model": "deepseek-v4.1-flash",
+      "prompt_tokens": 5388,
+      "completion_tokens": 734,
+      "total_tokens": 6122
+    },
+    {
+      "purpose": "primary",
+      "model": "deepseek-v4.1-flash",
+      "prompt_tokens": 5399,
+      "completion_tokens": 717,
+      "total_tokens": 6116
+    },
+    {
+      "purpose": "primary",
+      "model": "deepseek-v4.1-flash",
+      "prompt_tokens": 5413,
+      "completion_tokens": 707,
+      "total_tokens": 6120
+    },
+    {
+      "purpose": "primary",
+      "model": "deepseek-v4.1-flash",
+      "prompt_tokens": 5554,
+      "completion_tokens": 838,
+      "total_tokens": 6392
+    },
+    {
+      "purpose": "primary",
+      "model": "deepseek-v4.1-flash",
+      "prompt_tokens": 5610,
+      "completion_tokens": 864,
+      "total_tokens": 6474
+    },
+    {
+      "purpose": "primary",
+      "model": "deepseek-v4.1-flash",
+      "prompt_tokens": 5611,
+      "completion_tokens": 1671,
+      "total_tokens": 7282
+    },
+    {
+      "purpose": "evaluator",
+      "model": "kimi-k2.5",
+      "prompt_tokens": 1287,
+      "completion_tokens": 387,
+      "total_tokens": 1674
+    }
+  ],
+  "initial_view_error": "视图组误差（共 2 个视图）:\n  - (Id_Vg)Id_Vgs@vbs=0.0@NMOS(W=200.0 L=0.2500 T=27.00 nf=1.000): error=0.5632776143998393\n  - (id_vd)Id_Vds@vbs=0.0@NMOS(W=200.0 L=0.2500 T=27.00 nf=1.000): error=0.5443086184411389\n聚合误差：0.553793116420489",
+  "optimize_job_id": "571e90b8-f9ec-4b2f-b182-4df906e9a3e3",
+  "latest_optimize_done": false
+}

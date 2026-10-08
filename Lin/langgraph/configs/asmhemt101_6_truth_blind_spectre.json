@@ -1,0 +1,104 @@
+{
+  "project_name": "ASMHEMT101_6_OneDevice_Fresh_v3_20261008",
+  "device_type": "Mosfet",
+  "device_polarity": "NMOS",
+  "create_project": true,
+  "variables": {
+    "technology": "GaN HEMT",
+    "workflow": "blind voltage-current extraction",
+    "llm_input_contract": "VGS,VDS,ID,IG,temperature,sweep labels only"
+  },
+  "data_sources": [
+    {
+      "name": "asmhemt101_6_truth_dc",
+      "path": "one_device_fresh_v1/truth_all_dc.pms",
+      "local_path": "artifacts/asmhemt101_6/truth_results/parsed/truth_all_dc.pms",
+      "upload_group": "one_device_fresh_v1",
+      "data_type": 0,
+      "device_type": "Mosfet",
+      "device_polarity": "NMOS",
+      "extract_spec": true
+    }
+  ],
+  "model": {
+    "path": "one_device_fresh_v1/truth_blind_initial_guess.model.lib",
+    "local_path": "artifacts/asmhemt101_6/blind/truth_blind_initial_guess.model.lib",
+    "upload_group": "one_device_fresh_v1",
+    "format": "hspice",
+    "suite_id": 0,
+    "model_name": "asmhemt_blind",
+    "simulator": "Spectre"
+  },
+  "parameters": [
+    {
+      "name": "voff",
+      "value": "-1.5",
+      "minimum": -4.0,
+      "maximum": 0.0,
+      "step": 0.02
+    },
+    {
+      "name": "nfactor",
+      "value": "1.0",
+      "minimum": 0.2,
+      "maximum": 3.0,
+      "step": 0.02
+    },
+    {
+      "name": "u0",
+      "value": "0.10",
+      "minimum": 0.02,
+      "maximum": 0.5,
+      "step": 0.002
+    },
+    {
+      "name": "vsat",
+      "value": "150000",
+      "minimum": 50000.0,
+      "maximum": 400000.0,
+      "step": 2000.0
+    },
+    {
+      "name": "lambda",
+      "value": "0.02",
+      "minimum": 0.0,
+      "maximum": 0.2,
+      "step": 0.001
+    }
+  ],
+  "filters": [
+    {
+      "kind": "data",
+      "data_source_name": "asmhemt101_6_truth_dc"
+    }
+  ],
+  "views": [
+    {
+      "filter_string": "type,op,name,asmhemt101_6_truth_dc",
+      "source_string": "asmhemt101_6_truth_dc, asmhemt_blind_S",
+      "device_string": "t=27",
+      "page_string": "id_vgs",
+      "selection_string": "x(-5,2),sep(5)",
+      "prop_string": "logy"
+    },
+    {
+      "filter_string": "type,op,name,asmhemt101_6_truth_dc",
+      "source_string": "asmhemt101_6_truth_dc, asmhemt_blind_S",
+      "device_string": "t=27",
+      "page_string": "id_vd_vgs",
+      "selection_string": "x(0,10),sep(0)"
+    }
+  ],
+  "optimize": {
+    "enabled": true,
+    "param_string": "voff,nfactor,u0,vsat,lambda"
+  },
+  "qa": {
+    "enabled": false
+  },
+  "export": {
+    "save_project": true,
+    "model_path": "/home/edaagent/model/asmhemt101_6_one_device_fitted_v3.lib",
+    "view_group_path": "/home/edaagent/report/one_device_fitted_views_v3.xlsx"
+  }
+}

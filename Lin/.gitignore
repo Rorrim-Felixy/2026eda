@@ -1,0 +1,25 @@
+.env
+**/.env
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.idea/
+.vscode/
+*.key
+*.pem
+id_ed25519*
+*.license
+license.dat
+*.hprof
+*.tmp
+*.bak
+*.swp
+*.log.local
+
+# MeQLab and Spectre runtime scratch files created by future runs.
+*.ahdlSimDB/
+meqlab-spectre-jobs/
+.meqlab_spectre_failures/
+

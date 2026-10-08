@@ -1,0 +1,488 @@
+{
+  "schema_version": 1,
+  "config_hash": "7d35bf985b2c7532b9624b67a86227a042f5dc1308304df13f6f729a7da9e678",
+  "project_name": "ASMHEMT101_6_OneDevice_Fresh_v3_20261008",
+  "created_at": "2026-10-07T16:19:46.589277+00:00",
+  "updated_at": "2026-10-07T16:21:18.229464+00:00",
+  "stages": {
+    "project": {
+      "status": "completed",
+      "updated_at": "2026-10-07T16:20:34.271235+00:00"
+    },
+    "data": {
+      "status": "completed",
+      "updated_at": "2026-10-07T16:20:35.207310+00:00"
+    },
+    "model": {
+      "status": "completed",
+      "updated_at": "2026-10-07T16:20:37.299579+00:00"
+    },
+    "parameters": {
+      "status": "completed",
+      "updated_at": "2026-10-07T16:20:37.363234+00:00"
+    },
+    "filters": {
+      "status": "completed",
+      "updated_at": "2026-10-07T16:20:37.811252+00:00"
+    },
+    "views": {
+      "status": "completed",
+      "updated_at": "2026-10-07T16:21:18.229464+00:00"
+    }
+  },
+  "resolved": {
+    "model_suite_id": 0,
+    "model_source_name": "asmhemt_blind_S",
+    "initial_view_error": "视图组误差（共 2 个视图）:\n  - (Id_Vg)Id_Vgs@vbs=0.0@NMOS(W=200.0 L=0.2500 T=27.00 nf=1.000): error=0.5632776143998393\n  - (id_vd)Id_Vds@vbs=0.0@NMOS(W=200.0 L=0.2500 T=27.00 nf=1.000): error=0.5443086184411389\n聚合误差：0.553793116420489"
+  },
+  "actions": [
+    {
+      "timestamp": "2026-10-07T16:20:34.233409+00:00",
+      "stage": "project",
+      "tool": "generate_project",
+      "arguments": {
+        "project_name": "ASMHEMT101_6_OneDevice_Fresh_v3_20261008",
+        "device_type": "Mosfet",
+        "device_polarity": "NMOS"
+      },
+      "status": "completed",
+      "result": "工程初始化成功\n路径：/tmp/MeqlabProjects/ASMHEMT101_6_OneDevice_Fresh_v3_20261008\n器件类型：Mosfet\n器件极性：NMOS"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:34.246858+00:00",
+      "stage": "project",
+      "tool": "set_variable",
+      "arguments": {
+        "name": "technology",
+        "value": "GaN HEMT"
+      },
+      "status": "completed",
+      "result": "工艺信息设置成功"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:34.256865+00:00",
+      "stage": "project",
+      "tool": "set_variable",
+      "arguments": {
+        "name": "workflow",
+        "value": "blind voltage-current extraction"
+      },
+      "status": "completed",
+      "result": "工艺信息设置成功"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:34.269043+00:00",
+      "stage": "project",
+      "tool": "set_variable",
+      "arguments": {
+        "name": "llm_input_contract",
+        "value": "VGS,VDS,ID,IG,temperature,sweep labels only"
+      },
+      "status": "completed",
+      "result": "工艺信息设置成功"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:34.288381+00:00",
+      "stage": "data",
+      "tool": "upload_file",
+      "arguments": {
+        "local_path": "C:\\Users\\16078\\Documents\\ChatGPT\\EDA比赛\\langgraph_agent\\artifacts\\asmhemt101_6\\truth_results\\parsed\\truth_all_dc.pms",
+        "group_name": "one_device_fresh_v1"
+      },
+      "status": "completed",
+      "result": "文件上传成功"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:34.657412+00:00",
+      "stage": "data",
+      "tool": "load_data",
+      "arguments": {
+        "data_type": 0,
+        "path": "one_device_fresh_v1/truth_all_dc.pms",
+        "data_source_name": "asmhemt101_6_truth_dc",
+        "device_type": "Mosfet",
+        "device_polarity": "NMOS"
+      },
+      "status": "completed",
+      "result": "数据加载成功\n名称：asmhemt101_6_truth_dc\nID: 0"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:34.668051+00:00",
+      "stage": "data",
+      "tool": "list_data_sources",
+      "arguments": {},
+      "status": "completed",
+      "result": "数据源列表:\n  - asmhemt101_6_truth_dc (ID: 0)\n"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:34.678630+00:00",
+      "stage": "data",
+      "tool": "get_data_detail",
+      "arguments": {
+        "data_source_name": "asmhemt101_6_truth_dc"
+      },
+      "status": "completed",
+      "result": "数据详情:\n名称：asmhemt101_6_truth_dc\n类型：Mosfet\n页数：2"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:35.198330+00:00",
+      "stage": "data",
+      "tool": "extract_spec",
+      "arguments": {
+        "data_source_name": "asmhemt101_6_truth_dc"
+      },
+      "status": "completed",
+      "result": "Spec 抽取成功"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:35.205532+00:00",
+      "stage": "data",
+      "tool": "list_data_sources",
+      "arguments": {},
+      "status": "completed",
+      "result": "数据源列表:\n  - asmhemt101_6_truth_dc (ID: 0)\n"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:35.221409+00:00",
+      "stage": "model",
+      "tool": "upload_file",
+      "arguments": {
+        "local_path": "C:\\Users\\16078\\Documents\\ChatGPT\\EDA比赛\\langgraph_agent\\artifacts\\asmhemt101_6\\blind\\truth_blind_initial_guess.model.lib",
+        "group_name": "one_device_fresh_v1"
+      },
+      "status": "completed",
+      "result": "文件上传成功"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:35.306105+00:00",
+      "stage": "model",
+      "tool": "load_model",
+      "arguments": {
+        "path": "one_device_fresh_v1/truth_blind_initial_guess.model.lib",
+        "format": "hspice"
+      },
+      "status": "completed",
+      "result": "模型加载成功\n路径：/home/edaagent/one_device_fresh_v1/truth_blind_initial_guess.model.lib\n格式：hspice"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:35.317459+00:00",
+      "stage": "model",
+      "tool": "list_available_models",
+      "arguments": {},
+      "status": "completed",
+      "result": "可用模型列表:\n  - ID: 0, 路径：/home/edaagent/one_device_fresh_v1/truth_blind_initial_guess.model.lib\n"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:37.282070+00:00",
+      "stage": "model",
+      "tool": "add_model_source",
+      "arguments": {
+        "model_suite_id": 0,
+        "simulator": "Spectre",
+        "model_name": "asmhemt_blind"
+      },
+      "status": "completed",
+      "result": "模型源添加成功（共 1 个）:\n  - 名称：asmhemt_blind_S，模拟器：Spectre\n"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:37.294629+00:00",
+      "stage": "model",
+      "tool": "list_model_sources",
+      "arguments": {},
+      "status": "completed",
+      "result": "模型源列表（共 1 个）:\n  - 名称：asmhemt_blind_S，模拟器：Spectre\n"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:37.319343+00:00",
+      "stage": "parameters",
+      "tool": "set_param",
+      "arguments": {
+        "model_source_name": "asmhemt_blind_S",
+        "param_name": "voff",
+        "const_index": 0,
+        "param_value": "-1.5",
+        "param_min": -4.0,
+        "param_max": 0.0,
+        "param_step": 0.02
+      },
+      "status": "completed",
+      "result": "参数设置成功"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:37.330293+00:00",
+      "stage": "parameters",
+      "tool": "set_param",
+      "arguments": {
+        "model_source_name": "asmhemt_blind_S",
+        "param_name": "nfactor",
+        "const_index": 0,
+        "param_value": "1.0",
+        "param_min": 0.2,
+        "param_max": 3.0,
+        "param_step": 0.02
+      },
+      "status": "completed",
+      "result": "参数设置成功"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:37.340427+00:00",
+      "stage": "parameters",
+      "tool": "set_param",
+      "arguments": {
+        "model_source_name": "asmhemt_blind_S",
+        "param_name": "u0",
+        "const_index": 0,
+        "param_value": "0.10",
+        "param_min": 0.02,
+        "param_max": 0.5,
+        "param_step": 0.002
+      },
+      "status": "completed",
+      "result": "参数设置成功"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:37.351115+00:00",
+      "stage": "parameters",
+      "tool": "set_param",
+      "arguments": {
+        "model_source_name": "asmhemt_blind_S",
+        "param_name": "vsat",
+        "const_index": 0,
+        "param_value": "150000",
+        "param_min": 50000.0,
+        "param_max": 400000.0,
+        "param_step": 2000.0
+      },
+      "status": "completed",
+      "result": "参数设置成功"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:37.360708+00:00",
+      "stage": "parameters",
+      "tool": "set_param",
+      "arguments": {
+        "model_source_name": "asmhemt_blind_S",
+        "param_name": "lambda",
+        "const_index": 0,
+        "param_value": "0.02",
+        "param_min": 0.0,
+        "param_max": 0.2,
+        "param_step": 0.001
+      },
+      "status": "completed",
+      "result": "参数设置成功"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:37.788777+00:00",
+      "stage": "filters",
+      "tool": "build_filter_by_data",
+      "arguments": {
+        "data_source_name": "asmhemt101_6_truth_dc"
+      },
+      "status": "completed",
+      "result": "Filter 构建成功"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:37.809231+00:00",
+      "stage": "filters",
+      "tool": "list_filters",
+      "arguments": {},
+      "status": "completed",
+      "result": "Filter 列表 (共 1 个):\n  - asmhemt101_6_truth_dc(Sweep) (Ordinary Page)\n"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:37.925474+00:00",
+      "stage": "views",
+      "tool": "view",
+      "arguments": {
+        "view_fields": [
+          {
+            "filter_string": "type,op,name,asmhemt101_6_truth_dc",
+            "source_string": "asmhemt101_6_truth_dc, asmhemt_blind_S",
+            "device_string": "t=27",
+            "page_string": "id_vgs",
+            "selection_string": "x(-5,2),sep(5)",
+            "prop_string": "logy"
+          },
+          {
+            "filter_string": "type,op,name,asmhemt101_6_truth_dc",
+            "source_string": "asmhemt101_6_truth_dc, asmhemt_blind_S",
+            "device_string": "t=27",
+            "page_string": "id_vd_vgs",
+            "selection_string": "x(0,10),sep(0)"
+          }
+        ]
+      },
+      "status": "completed",
+      "result": "视图选择成功"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:37.936444+00:00",
+      "stage": "views",
+      "tool": "get_view_group_error",
+      "arguments": {},
+      "status": "completed",
+      "result": "视图组误差（共 0 个视图）:\n聚合误差：nan"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:39.948090+00:00",
+      "stage": "views",
+      "tool": "get_view_group_error",
+      "arguments": {},
+      "status": "completed",
+      "result": "视图组误差（共 0 个视图）:\n聚合误差：nan"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:41.960725+00:00",
+      "stage": "views",
+      "tool": "get_view_group_error",
+      "arguments": {},
+      "status": "completed",
+      "result": "视图组误差（共 0 个视图）:\n聚合误差：nan"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:43.977976+00:00",
+      "stage": "views",
+      "tool": "get_view_group_error",
+      "arguments": {},
+      "status": "completed",
+      "result": "视图组误差（共 0 个视图）:\n聚合误差：nan"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:45.995024+00:00",
+      "stage": "views",
+      "tool": "get_view_group_error",
+      "arguments": {},
+      "status": "completed",
+      "result": "视图组误差（共 0 个视图）:\n聚合误差：nan"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:48.015880+00:00",
+      "stage": "views",
+      "tool": "get_view_group_error",
+      "arguments": {},
+      "status": "completed",
+      "result": "视图组误差（共 0 个视图）:\n聚合误差：nan"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:50.034192+00:00",
+      "stage": "views",
+      "tool": "get_view_group_error",
+      "arguments": {},
+      "status": "completed",
+      "result": "视图组误差（共 0 个视图）:\n聚合误差：nan"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:52.048788+00:00",
+      "stage": "views",
+      "tool": "get_view_group_error",
+      "arguments": {},
+      "status": "completed",
+      "result": "视图组误差（共 0 个视图）:\n聚合误差：nan"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:54.060882+00:00",
+      "stage": "views",
+      "tool": "get_view_group_error",
+      "arguments": {},
+      "status": "completed",
+      "result": "视图组误差（共 0 个视图）:\n聚合误差：nan"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:56.079085+00:00",
+      "stage": "views",
+      "tool": "get_view_group_error",
+      "arguments": {},
+      "status": "completed",
+      "result": "视图组误差（共 0 个视图）:\n聚合误差：nan"
+    },
+    {
+      "timestamp": "2026-10-07T16:20:58.088835+00:00",
+      "stage": "views",
+      "tool": "get_view_group_error",
+      "arguments": {},
+      "status": "completed",
+      "result": "视图组误差（共 0 个视图）:\n聚合误差：nan"
+    },
+    {
+      "timestamp": "2026-10-07T16:21:00.100460+00:00",
+      "stage": "views",
+      "tool": "get_view_group_error",
+      "arguments": {},
+      "status": "completed",
+      "result": "视图组误差（共 0 个视图）:\n聚合误差：nan"
+    },
+    {
+      "timestamp": "2026-10-07T16:21:02.108383+00:00",
+      "stage": "views",
+      "tool": "get_view_group_error",
+      "arguments": {},
+      "status": "completed",
+      "result": "视图组误差（共 0 个视图）:\n聚合误差：nan"
+    },
+    {
+      "timestamp": "2026-10-07T16:21:04.117231+00:00",
+      "stage": "views",
+      "tool": "get_view_group_error",
+      "arguments": {},
+      "status": "completed",
+      "result": "视图组误差（共 0 个视图）:\n聚合误差：nan"
+    },
+    {
+      "timestamp": "2026-10-07T16:21:06.127404+00:00",
+      "stage": "views",
+      "tool": "get_view_group_error",
+      "arguments": {},
+      "status": "completed",
+      "result": "视图组误差（共 0 个视图）:\n聚合误差：nan"
+    },
+    {
+      "timestamp": "2026-10-07T16:21:08.141418+00:00",
+      "stage": "views",
+      "tool": "get_view_group_error",
+      "arguments": {},
+      "status": "completed",
+      "result": "视图组误差（共 0 个视图）:\n聚合误差：nan"
+    },
+    {
+      "timestamp": "2026-10-07T16:21:10.150539+00:00",
+      "stage": "views",
+      "tool": "get_view_group_error",
+      "arguments": {},
+      "status": "completed",
+      "result": "视图组误差（共 0 个视图）:\n聚合误差：nan"
+    },
+    {
+      "timestamp": "2026-10-07T16:21:12.167500+00:00",
+      "stage": "views",
+      "tool": "get_view_group_error",
+      "arguments": {},
+      "status": "completed",
+      "result": "视图组误差（共 0 个视图）:\n聚合误差：nan"
+    },
+    {
+      "timestamp": "2026-10-07T16:21:14.186451+00:00",
+      "stage": "views",
+      "tool": "get_view_group_error",
+      "arguments": {},
+      "status": "completed",
+      "result": "视图组误差（共 0 个视图）:\n聚合误差：nan"
+    },
+    {
+      "timestamp": "2026-10-07T16:21:16.200367+00:00",
+      "stage": "views",
+      "tool": "get_view_group_error",
+      "arguments": {},
+      "status": "completed",
+      "result": "视图组误差（共 0 个视图）:\n聚合误差：nan"
+    },
+    {
+      "timestamp": "2026-10-07T16:21:18.223987+00:00",
+      "stage": "views",
+      "tool": "get_view_group_error",
+      "arguments": {},
+      "status": "completed",
+      "result": "视图组误差（共 2 个视图）:\n  - (Id_Vg)Id_Vgs@vbs=0.0@NMOS(W=200.0 L=0.2500 T=27.00 nf=1.000): error=0.5632776143998393\n  - (id_vd)Id_Vds@vbs=0.0@NMOS(W=200.0 L=0.2500 T=27.00 nf=1.000): error=0.5443086184411389\n聚合误差：0.553793116420489"
+    }
+  ]
+}

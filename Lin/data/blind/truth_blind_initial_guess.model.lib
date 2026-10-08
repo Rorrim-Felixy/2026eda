@@ -1,0 +1,12 @@
+* Blind ASM-HEMT model leaf for five-parameter extraction.
+* All switches match the synthetic truth; only the five parameters below are perturbed.
+.hdl "/home/edaagent/asmhemt101_6/asmhemt_nano_isothermal.va"
+
+.model asmhemt_blind asmhemt
++ shmod=0
++ trapmod=1
++ voff=-1.5
++ nfactor=1.0
++ u0=100.0e-3
++ vsat=1.5e5
++ lambda=0.02

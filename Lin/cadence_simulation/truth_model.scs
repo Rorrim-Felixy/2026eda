@@ -1,0 +1,14 @@
+// Hidden ground-truth ASM-HEMT 101.6.0 parameter card.
+// Unspecified parameters use the defaults listed in asmhemt101_6.lib
+// and declared by asmhemt_nano_isothermal.va.
+//
+// This is one device configuration shared by every simulation deck:
+//   shmod=0   four-terminal isothermal Spectre model
+//   trapmod=1 trap dynamics enabled globally
+simulator lang=spectre
+
+ahdl_include "asmhemt_nano_isothermal.va"
+
+model asm_truth asmhemt \
+    shmod=0 \
+    trapmod=1

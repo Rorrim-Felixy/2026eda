@@ -1,0 +1,37 @@
+{
+  "source_archive": "truth_all.raw.tar.gz",
+  "truth_model": "ASM-HEMT 101.6.0 defaults + shmod=0 + trapmod=1",
+  "blind_contract": {
+    "allowed_columns": [
+      "dataset_type",
+      "temperature_c",
+      "vgs_v",
+      "vds_v",
+      "id_a",
+      "ig_a"
+    ],
+    "forbidden": [
+      "model card",
+      "truth parameter values",
+      "list_params/get_param"
+    ]
+  },
+  "curves": {
+    "Id_Vg": {
+      "points": 71,
+      "vds_v": 5.0,
+      "id_abs_min_a": 1.000030935432521e-11,
+      "id_abs_max_a": 0.198391727646972
+    },
+    "Id_Vd": {
+      "points": 101,
+      "vgs_v": 0.0,
+      "id_abs_min_a": 0.0,
+      "id_abs_max_a": 0.235846430273465
+    }
+  },
+  "outputs": {
+    "csv": "truth_all_dc.csv",
+    "pms": "truth_all_dc.pms"
+  }
+}

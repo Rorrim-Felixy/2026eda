@@ -1,0 +1,329 @@
+
+Spectre (R) Circuit Simulator
+Version 23.1.0.242.isr1 64bit -- 7 Sep 2023
+Copyright (C) 1989-2023 Cadence Design Systems, Inc. All rights reserved worldwide. Cadence and Spectre are registered trademarks of Cadence Design Systems, Inc. All others are the property of their respective holders.
+
+Includes RSA BSAFE(R) Cryptographic or Security Protocol Software from RSA Security, Inc.
+
+User: meow   Host: meowu   HostID: 7F0101   PID: 28618
+Memory  available: 6.5783 GB  physical: 8.1816 GB
+Linux   : CentOS Linux release 7 (Core)
+CPU Type: AMD Ryzen 9 8945HX with Radeon Graphics
+All processors running at 2495.2 MHz
+        Socket: Processors
+        0:       0,  1,  2,  3,  4,  5,  6,  7
+        
+System load averages (1min, 5min, 15min) : 0.4 %, 0.2 %, 0.6 %
+This is a virtual machine
+
+
+Simulating `truth_all.scs' on meowu at 11:36:26 AM, Wed Oct 7, 2026 (process id: 28618).
+Current working directory: /mnt/hgfs/D/codex_truth_sim
+Command line:
+    /opt/cadence/SPECTRE231/tools.lnx86/bin/spectre -64 -format  \
+        psfascii -raw truth_all.raw +log truth_all.log truth_all.scs
+
+Licensing Information:
+[11:36:26.406937] Configured Lic search path (22.01-s002): /opt/cadence/IC618/share/license/license.dat
+
+Licensing Information:
+[11:36:26.431993] Periodic Lic check successful
+
+Loading /opt/cadence/SPECTRE231/tools.lnx86/cmi/lib/64bit/5.0/libinfineon_sh.so ...
+Loading /opt/cadence/SPECTRE231/tools.lnx86/cmi/lib/64bit/5.0/libphilips_I_sh.so ...
+Loading /opt/cadence/SPECTRE231/tools.lnx86/cmi/lib/64bit/5.0/libphilips_sh.so ...
+Loading /opt/cadence/SPECTRE231/tools.lnx86/cmi/lib/64bit/5.0/libsparam_sh.so ...
+Loading /opt/cadence/SPECTRE231/tools.lnx86/cmi/lib/64bit/5.0/libstmodels_sh.so ...
+Reading file:  /mnt/hgfs/D/codex_truth_sim/truth_all.scs
+Reading file:  /opt/cadence/SPECTRE231/tools.lnx86/spectre/etc/configs/spectre.cfg
+Reading file:  /mnt/hgfs/D/codex_truth_sim/truth_model.scs
+Reading file:  /mnt/hgfs/D/codex_truth_sim/asmhemt_nano_isothermal.va
+Reading file:  /mnt/hgfs/D/codex_truth_sim/disciplines.vams
+Reading file:  /mnt/hgfs/D/codex_truth_sim/constants.vams
+Time for NDB Parsing: CPU = 296.974 ms, elapsed = 184.203 ms.
+Time accumulated: CPU = 351.391 ms, elapsed = 184.204 ms.
+Peak resident memory used = 132 Mbytes.
+
+Created directory ./truth_all.ahdlSimDB/ (775)
+Created directory ./truth_all.ahdlSimDB//754a41b6956ea1a2dc6e5ad8d7a21651.asmhemt.ahdlcmi/ (775)
+Created directory ./truth_all.ahdlSimDB//754a41b6956ea1a2dc6e5ad8d7a21651.asmhemt.ahdlcmi/Linux-64/ (775)
+Compiling ahdlcmi module library for asmhemt.
+Finished compilation in 119 s (1m  59.1s) (elapsed) for asmhemt.
+Installed compiled interface for asmhemt.
+Time for Elaboration: CPU = 25.8633 s, elapsed = 143.631 s (2m  23.6s).
+Time accumulated: CPU = 26.2158 s, elapsed = 143.816 s (2m  23.8s).
+Peak resident memory used = 4.06 Gbytes.
+
+
+Time for EDB Visiting: CPU = 2.368 ms, elapsed = 4.94385 ms.
+Time accumulated: CPU = 26.2185 s, elapsed = 143.822 s (2m  23.8s).
+Peak resident memory used = 4.07 Gbytes.
+
+
+Notice from spectre during initial setup.
+    Ignorevaref=yes is ignored since all nodes are connected to Verilog-A modules.
+
+
+Global user options:
+               temp = 27
+               tnom = 27
+             reltol = 0.0001
+
+Scoped user options:
+
+Circuit inventory:
+              nodes 2
+            asmhemt 1     
+               port 2     
+
+Analysis and control statement inventory:
+                 ac 1     
+                 dc 2     
+              noise 1     
+                 sp 1     
+               tran 1     
+
+Output statements:
+             .probe 0     
+           .measure 0     
+               save 1     
+
+Time for parsing: CPU = 21.914 ms, elapsed = 39.8812 ms.
+Time accumulated: CPU = 26.2407 s, elapsed = 143.863 s (2m  23.9s).
+Peak resident memory used = 4.07 Gbytes.
+
+~~~~~~~~~~~~~~~~~~~~~~
+Pre-Simulation Summary
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+
+***********************************
+DC Analysis `dcVg': VGS = (-5 -> 2)
+***********************************
+
+Opening the PSFASCII file truth_all.raw/dcVg.dc ...
+Important parameter values:
+    reltol = 100e-06
+    abstol(V) = 1 uV
+    abstol(I) = 1 pA
+    temp = 27 C
+    tnom = 27 C
+    tempeffects = all
+    gmindc = 1 pS
+
+Notice from spectre at VGS = -5 during DC analysis `dcVg'.
+    Bad pivoting is found during DC analysis. Option dc_pivot_check=yes is recommended for possible improvement of convergence.
+Notice from spectre at VGS = -4.9 during DC analysis `dcVg'.
+    Bad pivoting is found during DC analysis. Option dc_pivot_check=yes is recommended for possible improvement of convergence.
+
+.
+
+Notice from spectre at VGS = -4.8 during DC analysis `dcVg'.
+    Bad pivoting is found during DC analysis. Option dc_pivot_check=yes is recommended for possible improvement of convergence.
+
+..
+
+Notice from spectre at VGS = -4.7 during DC analysis `dcVg'.
+    Bad pivoting is found during DC analysis. Option dc_pivot_check=yes is recommended for possible improvement of convergence.
+
+...
+
+Notice from spectre at VGS = -4.6 during DC analysis `dcVg'.
+    Bad pivoting is found during DC analysis. Option dc_pivot_check=yes is recommended for possible improvement of convergence.
+        Further occurrences of this notice will be suppressed.
+
+.......9.......8.......7.......6.......5.......4.......3.......2.......1.......0
+
+Maximum value achieved for any signal of each quantity: 
+V: V(Xdut.gi) = 4 V
+I: I(Pd:p) = 198.4 mA
+DC simulation time: CPU = 29.218 ms, elapsed = 48.5778 ms.
+
+Warning from spectre at VGS = 2 during DC analysis `dcVg'.
+    WARNING (SPECTRE-555): Swap memory used = 34.8 Mbytes. Swapping detected, resulting in slowed simulation.   Consider running Spectre simulation on a machine with more available memory.
+Notice from spectre at VGS = 2 during DC analysis `dcVg'.
+    The value of parameter 'VGS' has been reset to the original value 0.
+
+Total time required for dc analysis `dcVg': CPU = 29.321 ms, elapsed = 48.7649 ms, util. = 60.1%.
+Time accumulated: CPU = 26.341 s, elapsed = 143.986 s (2m  24.0s).
+Peak resident memory used = 4.07 Gbytes.
+
+
+Notice from spectre.
+    66 notices suppressed.
+
+
+***********************************
+DC Analysis `dcVd': VDS = (0 -> 10)
+***********************************
+
+Opening the PSFASCII file truth_all.raw/dcVd.dc ...
+Important parameter values:
+    reltol = 100e-06
+    abstol(V) = 1 uV
+    abstol(I) = 1 pA
+    temp = 27 C
+    tnom = 27 C
+    tempeffects = all
+    gmindc = 1 pS
+.......9.......8.......7.......6.......5.......4..
+Trying `homotopy = gmin'.
+.......9.......8.......7.......6.......5.......4.......3.......2.......1.......0
+
+Maximum value achieved for any signal of each quantity: 
+V: V(Xdut.trap2) = 126.2 V
+I: I(Pd:p) = 175.3 mA
+DC simulation time: CPU = 42.413 ms, elapsed = 64.642 ms.
+
+Notice from spectre at VDS = 10 during DC analysis `dcVd'.
+    The value of parameter 'VDS' has been reset to the original value 5.
+
+Total time required for dc analysis `dcVd': CPU = 42.504 ms, elapsed = 64.837 ms, util. = 65.6%.
+Time accumulated: CPU = 26.3845 s, elapsed = 144.053 s (2m  24.1s).
+Peak resident memory used = 4.07 Gbytes.
+
+
+***********************************************
+AC Analysis `acCV': freq = (1 MHz -> 1.001 MHz)
+***********************************************
+DC simulation time: CPU = 642 us, elapsed = 639.915 us.
+
+Opening the PSFASCII file truth_all.raw/acCV.ac ...
+.......9.......8.......7.......6.......5.......4.......3.......2.......1.......0
+Accumulated DC solution time =            879.049 us.
+Intrinsic ac analysis time =              32.202 ms.
+Total time required for ac analysis `acCV': CPU = 11.804 ms, elapsed = 33.267 ms, util. = 35.5%.
+Time accumulated: CPU = 26.3969 s, elapsed = 144.087 s (2m  24.1s).
+Peak resident memory used = 4.07 Gbytes.
+
+
+****************************************************
+S-Parameter Analysis `spS': freq = (1 MHz -> 20 GHz)
+****************************************************
+
+Notice from spectre during SP analysis `spS'.
+    Operating points will not be recomputed: the circuit and conditions were not changed since previous analysis.
+
+.......9.......8.......7.......6.......5.......4.......3.......2.......1.......0
+Accumulated DC solution time =            303.984 us.
+Intrinsic sp analysis time =              18.002 ms.
+Total time required for sp analysis `spS': CPU = 8.737 ms, elapsed = 18.4731 ms, util. = 47.3%.
+Time accumulated: CPU = 26.4061 s, elapsed = 144.107 s (2m  24.1s).
+Peak resident memory used = 4.07 Gbytes.
+
+
+*****************************************************
+Transient Analysis `tranPulse': time = (0 s -> 50 us)
+*****************************************************
+
+Notice from spectre during IC analysis, during transient analysis `tranPulse'.
+    Bad pivoting is found during DC analysis. Option dc_pivot_check=yes is recommended for possible improvement of convergence.
+
+DC simulation time: CPU = 712 us, elapsed = 886.917 us.
+
+Opening the PSFASCII file truth_all.raw/tranPulse.tran.tran ...
+Important parameter values:
+    start = 0 s
+    outputstart = 0 s
+    stop = 50 us
+    step = 10 ns
+    maxstep = 1 us
+    ic = all
+    useprevic = no
+    skipdc = no
+    reltol = 100e-06
+    abstol(V) = 1 uV
+    abstol(I) = 1 pA
+    temp = 27 C
+    tnom = 27 C
+    tempeffects = all
+    errpreset = moderate
+    method = traponly
+    lteratio = 3.5
+    relref = sigglobal
+    cmin = 0 F
+    gmin = 1 pS
+
+
+Output and IC/nodeset summary:
+                 save   2       (current)
+
+..
+
+Notice from spectre at time = 1.10764 us during transient analysis `tranPulse'.
+    Found trapezoidal ringing on node Xdut.trap2.
+Notice from spectre at time = 1.11487 us during transient analysis `tranPulse'.
+    Found trapezoidal ringing on node Xdut.trap2.
+Notice from spectre at time = 1.12932 us during transient analysis `tranPulse'.
+    Found trapezoidal ringing on node Xdut.trap2.
+Notice from spectre at time = 1.15822 us during transient analysis `tranPulse'.
+    Found trapezoidal ringing on node Xdut.trap2.
+Notice from spectre at time = 1.21603 us during transient analysis `tranPulse'.
+    Found trapezoidal ringing on node Xdut.gi.
+        Further occurrences of this notice will be suppressed.
+
+.......9.......8.......7.......6.......5.......4.......3.......2.......1.......0
+Number of accepted tran steps =             410
+
+Notice from spectre during transient analysis `tranPulse'.
+    Trapezoidal ringing is detected during tran analysis.
+        Please use method=trap for better results and performance.
+
+
+Maximum value achieved for any signal of each quantity: 
+V: V(Xdut.trap2) = 100 V
+I: I(Xdut:trap2_flow) = 1 A
+If your circuit contains signals of the same quantity that are vastly different in size (such as high voltage circuitry combined with low voltage control circuitry), you should consider specifying global option `bin_relref=yes'.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Post-Transient Simulation Summary
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   -   To further speed up simulation, consider
+          add ++aps on command line
+   -   Non-default settings that could significantly slow down simulation
+          reltol = 100e-06, default 1e-03
+   -   The circuit contains signals of the voltage > 10V, consider to set highvoltage=yes to get better accuracy and convergence ability.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+During simulation, the CPU load for active processors is :
+         0 (2.1 %)       1 (10.8 %)      2 (35.7 %)      3 (1.3 %)
+         4 (16.3 %)      5 (14.4 %)      6 (11.7 %)      7 (1.7 %)
+        Total: 94.2%
+Initial condition solution time: CPU = 762 us, elapsed = 1.03402 ms.
+Intrinsic tran analysis time:    CPU = 58.619 ms, elapsed = 80.065 ms.
+Total time required for tran analysis `tranPulse': CPU = 61.299 ms, elapsed = 86.3349 ms, util. = 71%.
+Time accumulated: CPU = 26.4686 s, elapsed = 144.195 s (2m  24.2s).
+Peak resident memory used = 4.07 Gbytes.
+
+
+Notice from spectre.
+    31 notices suppressed.
+
+
+****************************************************
+Noise Analysis `noiseOne': freq = (1 kHz -> 100 MHz)
+****************************************************
+DC simulation time: CPU = 1.035 ms, elapsed = 1.03402 ms.
+
+Opening the PSFASCII file truth_all.raw/noiseOne.noise ...
+.......9.......8.......7.......6.......5.......4.......3.......2.......1.......0
+Accumulated DC solution time =            1.26195 ms.
+Intrinsic noise analysis time =              30.71 ms.
+Total time required for noise analysis `noiseOne': CPU = 15.165 ms, elapsed = 32.197 ms, util. = 47.1%.
+Time accumulated: CPU = 26.4843 s, elapsed = 144.229 s (2m  24.2s).
+Peak resident memory used = 4.07 Gbytes.
+
+Licensing Information:
+Lic Summary:
+[11:38:50.001184] cdslmd servers: /opt/cadence/IC618/share/license/license.dat
+[11:38:50.016528] Feature usage summary:
+[11:38:50.355679]   Virtuoso_Spectre  
+
+
+Aggregate audit (11:38:50 AM, Wed Oct 7, 2026):
+Time used: CPU = 26.5 s, elapsed = 144 s (2m  24.2s), util. = 18.4%.
+Time spent in licensing: elapsed = 21.8 ms.
+Peak memory used = 4.24 Gbytes.
+Simulation started at: 11:36:26 AM, Wed Oct 7, 2026, ended at: 11:38:50 AM, Wed Oct 7, 2026, with elapsed time (wall clock): 144 s (2m  24.2s).
+spectre completes with 0 errors, 1 warning, and 19 notices.

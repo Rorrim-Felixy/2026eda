@@ -1,0 +1,91 @@
+HEADER
+"PSFversion" "1.00"
+"Log Generator" "drlLog rev. 1.0"
+"Log Time Stamp" "Wed Oct  7 11:38:50 2026"
+"psfversion" "1.4.0"
+"simulator" "spectre"
+"version" "23.1.0.242.isr1"
+"date" "11:38:50 AM, Wed Oct 7, 2026"
+"design" "(no title)"
+"signalNameType" "spectre"
+"simMode" "Spectre"
+"measdgt" 0
+"ingold" 2
+"sst2usecolon" 0
+TYPE
+"analysisInst" STRUCT(
+"analysisType" STRING *
+"dataFile" STRING *
+"format" STRING *
+"parent" STRING *
+"sweepVariable" ARRAY ( * ) STRING *
+"description" STRING *
+)
+VALUE
+"dcVg-dc" "analysisInst" (
+"dc"
+"dcVg.dc"
+"PSF"
+""
+("VGS")
+"DC Analysis `dcVg': VGS = (-5 -> 2)"
+) PROP(
+"data_type" "scalar"
+)
+
+"dcVd-dc" "analysisInst" (
+"dc"
+"dcVd.dc"
+"PSF"
+""
+("VDS")
+"DC Analysis `dcVd': VDS = (0 -> 10)"
+) PROP(
+"data_type" "scalar"
+)
+
+"acCV-ac" "analysisInst" (
+"ac"
+"acCV.ac"
+"PSF"
+""
+("freq")
+"AC Analysis `acCV': freq = (1 MHz -> 1.001 MHz)"
+) PROP(
+"data_type" "swept_scalar"
+)
+
+"spS-sp" "analysisInst" (
+"sp"
+"spS.sp"
+"PSF"
+""
+("freq")
+"S-Parameter Analysis `spS': freq = (1 MHz -> 20 GHz)"
+) PROP(
+"data_type" "swept_scalar"
+)
+
+"tranPulse-tran" "analysisInst" (
+"tran"
+"tranPulse.tran.tran"
+"PSF"
+""
+("time")
+"Transient Analysis `tranPulse': time = (0 s -> 50 us)"
+) PROP(
+"data_type" "swept_scalar"
+)
+
+"noiseOne-noise" "analysisInst" (
+"noise"
+"noiseOne.noise"
+"PSF"
+""
+("freq")
+"Noise Analysis `noiseOne': freq = (1 kHz -> 100 MHz)"
+) PROP(
+"data_type" "swept_struct"
+)
+
+END

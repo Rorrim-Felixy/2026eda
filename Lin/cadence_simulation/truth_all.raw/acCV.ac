@@ -1,0 +1,154 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "23.1.0.242.isr1"
+"date" "11:38:50 AM, Wed Oct 7, 2026"
+"design" "(no title)"
+"analysis type" "ac"
+"analysis name" "acCV"
+"analysis description" "AC Analysis `acCV': freq = (1 MHz -> 1.001 MHz)"
+"xVecSorted" "ascending"
+"tolerance.relative" 1.000000000000000e-04
+"start" 1.000000000000000e+06
+"stop" 1.001000000000000e+06
+"operating point producer" "acCV"
+TYPE
+"sweep" FLOAT DOUBLE PROP(
+"key" "sweep"
+)
+"Real" COMPLEX DOUBLE PROP(
+"units" ""
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"Tau" COMPLEX DOUBLE PROP(
+"units" "N*m"
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"Alpha" COMPLEX DOUBLE PROP(
+"units" "rads/s^2"
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"Omega" COMPLEX DOUBLE PROP(
+"units" "rads/s"
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"Theta" COMPLEX DOUBLE PROP(
+"units" "rads"
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"F" COMPLEX DOUBLE PROP(
+"units" "N"
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"Imp" COMPLEX DOUBLE PROP(
+"units" "m/s^3"
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"Acc" COMPLEX DOUBLE PROP(
+"units" "m/s^2"
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"Vel" COMPLEX DOUBLE PROP(
+"units" "m/s"
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"Pos" COMPLEX DOUBLE PROP(
+"units" "m"
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"Phi" COMPLEX DOUBLE PROP(
+"units" "Wb"
+"key" "node"
+"tolerance" 1.000000000000000e-09
+)
+"V" COMPLEX DOUBLE PROP(
+"units" "V"
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"I" COMPLEX DOUBLE PROP(
+"units" "A"
+"key" "branch"
+"tolerance" 1.000000000000000e-12
+)
+"MMF" COMPLEX DOUBLE PROP(
+"units" "A*turn"
+"key" "node"
+"tolerance" 1.000000000000000e-12
+)
+"Wb" COMPLEX DOUBLE PROP(
+"units" "Wb"
+"key" "node"
+"tolerance" 1.000000000000000e-09
+)
+"Temp" COMPLEX DOUBLE PROP(
+"units" "C"
+"key" "node"
+"tolerance" 1.000000000000000e-04
+)
+"Pwr" COMPLEX DOUBLE PROP(
+"units" "W"
+"key" "node"
+"tolerance" 1.000000000000000e-09
+)
+"U" COMPLEX DOUBLE PROP(
+"units" ""
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"V/Sec" COMPLEX DOUBLE PROP(
+"units" "V/s"
+"key" "node"
+"tolerance" 9.999999999999999e-05
+)
+"I/Sec" COMPLEX DOUBLE PROP(
+"units" "A/s"
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"1/Sec" COMPLEX DOUBLE PROP(
+"units" "1/s"
+"key" "node"
+"tolerance" 9.999999999999999e-05
+)
+"HOD" COMPLEX DOUBLE PROP(
+"units" ""
+"key" "node"
+"tolerance" 1.000000000000000e-02
+)
+"Q" COMPLEX DOUBLE PROP(
+"units" "coul"
+"key" "node"
+"tolerance" 1.000000000000000e-14
+)
+SWEEP
+"freq" "sweep" PROP(
+"sweep_direction" 0
+"units" "Hz"
+"plot" 0
+"grid" 1
+)
+TRACE
+"Pd:p" "I"
+"Pg:p" "I"
+VALUE
+"freq" 1.000000000000000e+06
+"Pd:p" (-1.765028361231559e-02 2.207868472132573e-06)
+"Pg:p" (-2.914532781783663e-10 -2.419057328631396e-06)
+"freq" 1.000500000000000e+06
+"Pd:p" (-1.765028359558671e-02 2.207921276594090e-06)
+"Pg:p" (-2.916006741626731e-10 -2.420266855002519e-06)
+"freq" 1.001000000000000e+06
+"Pd:p" (-1.765028357888273e-02 2.207974605437132e-06)
+"Pg:p" (-2.917481395359189e-10 -2.421476381374766e-06)
+END
